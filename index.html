@@ -881,7 +881,7 @@ function pollRemoteVersion(){
         if(!window.DASH_TS){ window.DASH_TS = v.ts; return; }
         if(v.ts !== window.DASH_TS){
             window.DASH_TS = v.ts;
-            location.replace(location.pathname + '?v=' + v.ts);
+            location.replace((location.pathname || '/index.html') + '?v=' + v.ts);
         }
     })
     .catch(()=>{});
