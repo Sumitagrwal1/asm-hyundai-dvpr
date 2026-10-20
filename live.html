@@ -40,19 +40,32 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:radial-grad
 .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #d63d5c,0 8px 12px rgba(214,61,92,.2)}
 .btn-sec{background:linear-gradient(180deg,#fff,#eaf2ff);color:#3d8bfd;box-shadow:0 8px 0 #8bb4f0,0 14px 22px rgba(61,139,253,.2)}
 .btn-sec:hover{color:#2563d6}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:14px;margin-bottom:16px}
-.stat-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:18px;box-shadow:var(--shadow),inset 0 1px 0 #fff;position:relative;overflow:hidden;min-width:0;transform:perspective(800px) rotateX(4deg);transform-origin:top;transition:transform .2s,box-shadow .2s}
-.stat-card:hover{transform:perspective(800px) rotateX(0) translateY(-6px);box-shadow:0 26px 50px rgba(43,33,24,.16)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:18px 14px;margin-bottom:22px;perspective:1100px}
+.stat-card{background:linear-gradient(165deg,#ffffff 0%,#fff8ef 55%,#ffe8d2 100%);border:1px solid #ffe0c4;border-radius:20px;padding:18px 16px 16px;position:relative;overflow:visible;min-width:0;transform:perspective(720px) rotateX(12deg) rotateY(-8deg) translateZ(8px);transform-origin:center bottom;transform-style:preserve-3d;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:perspective(720px) rotateX(4deg) rotateY(-2deg) translateY(-8px) translateZ(18px)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:10px;border-radius:20px 20px 0 0;transform:translateZ(12px)}
+.stat-card::after{content:'';position:absolute;left:6px;right:2px;bottom:-11px;height:14px;border-radius:0 0 16px 18px;transform:skewX(-18deg) translateZ(-8px);pointer-events:none}
 .stat-card:nth-child(1)::before{background:linear-gradient(90deg,#b39cff,#8b6cff)}
 .stat-card:nth-child(2)::before{background:linear-gradient(90deg,#5fd39a,#2db57a)}
 .stat-card:nth-child(3)::before{background:linear-gradient(90deg,#7eb6ff,#3d8bfd)}
 .stat-card:nth-child(4)::before{background:linear-gradient(90deg,#ff8aa0,#ff5a7a)}
 .stat-card:nth-child(5)::before{background:linear-gradient(90deg,#ffc85a,#f5a524)}
 .stat-card:nth-child(6)::before{background:linear-gradient(90deg,#ff7a7a,#e23d3d)}
-.stat-label{font-size:11px;font-weight:800;color:#8a7764;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;line-height:1.4}
-.stat-val{font-size:38px;font-weight:800;color:#2b2118;line-height:1;margin-bottom:6px;letter-spacing:-.03em}
-.stat-hint{font-size:13px;color:var(--text-muted);font-weight:600}
+.stat-card:nth-child(1){box-shadow:10px 16px 0 #8b6cff,18px 28px 34px rgba(139,108,255,.28)}
+.stat-card:nth-child(2){box-shadow:10px 16px 0 #2db57a,18px 28px 34px rgba(45,181,122,.28)}
+.stat-card:nth-child(3){box-shadow:10px 16px 0 #3d8bfd,18px 28px 34px rgba(61,139,253,.28)}
+.stat-card:nth-child(4){box-shadow:10px 16px 0 #ff5a7a,18px 28px 34px rgba(255,90,122,.28)}
+.stat-card:nth-child(5){box-shadow:10px 16px 0 #f5a524,18px 28px 34px rgba(245,165,36,.28)}
+.stat-card:nth-child(6){box-shadow:10px 16px 0 #e23d3d,18px 28px 34px rgba(226,61,61,.28)}
+.stat-card:nth-child(1)::after{background:#6d4fe0}
+.stat-card:nth-child(2)::after{background:#1f8a5a}
+.stat-card:nth-child(3)::after{background:#2563d6}
+.stat-card:nth-child(4)::after{background:#d63d5c}
+.stat-card:nth-child(5)::after{background:#c47d10}
+.stat-card:nth-child(6)::after{background:#b42323}
+.stat-label{font-size:11px;font-weight:800;color:#8a7764;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;line-height:1.4;transform:translateZ(16px)}
+.stat-val{font-size:40px;font-weight:800;color:#2b2118;line-height:1;margin-bottom:6px;letter-spacing:-.03em;transform:translateZ(28px);text-shadow:2px 3px 0 rgba(255,255,255,.9),4px 7px 0 rgba(43,33,24,.12),8px 14px 18px rgba(43,33,24,.18)}
+.stat-hint{font-size:13px;color:var(--text-muted);font-weight:600;transform:translateZ(12px);white-space:normal}
 .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin-bottom:16px}
 .chart-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:18px 16px 12px;box-shadow:var(--shadow),inset 0 1px 0 #fff;display:flex;flex-direction:column;min-width:0;overflow:visible;transform:perspective(900px) rotateX(3deg);transform-origin:top}
 .chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
@@ -92,15 +105,16 @@ tr:hover{background:#fff1f4}
 .page-info{font-size:13px;color:var(--text-muted);font-weight:600}
 .page-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .mobile-cards{display:none}
-.vcard{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.vcard{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:18px;padding:14px;box-shadow:var(--shadow),8px 12px 0 rgba(255,90,122,.18)}
 .vcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
 .vcard-reg{font-size:16px;font-weight:800;color:#ff5a7a;word-break:break-word;line-height:1.4}
-.vcard-name{font-size:14px;color:var(--text-sub);margin-top:6px;font-weight:600}
+.vcard-name{font-size:14px;color:var(--text-sub);margin-top:6px;font-weight:600;white-space:normal}
 .vcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.vcard-item{background:#fffaf2;border:0;border-radius:14px;padding:8px 10px;box-shadow:inset 0 1px 0 #fff,0 6px 12px rgba(43,33,24,.05)}
+.vcard-item{background:#fffaf2;border:0;border-radius:14px;padding:8px 10px;box-shadow:inset 0 1px 0 #fff,0 6px 12px rgba(43,33,24,.05);min-width:0}
 .vcard-item span{display:block;font-size:10px;font-weight:800;color:#8a7764;text-transform:uppercase;letter-spacing:.04em}
-.vcard-item b{display:block;font-size:14px;color:var(--text-main);margin-top:4px;word-break:break-word;white-space:normal}
-.vcard-status{grid-column:1/-1}
+.vcard-item b{display:block;font-size:13px;color:var(--text-main);margin-top:4px;word-break:break-word;overflow-wrap:anywhere;white-space:normal;line-height:1.35}
+.vcard-wide{grid-column:1/-1}
+.vcard a{color:#3d8bfd;font-weight:800}
 .page-btn{padding:8px 12px;border-radius:12px;border:0;background:#fff;font-family:inherit;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;min-height:36px;box-shadow:0 6px 12px rgba(43,33,24,.08)}
 .page-btn.active{background:linear-gradient(180deg,#7eb6ff,#3d8bfd);color:#fff}
 .gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:linear-gradient(165deg,#fffdf8,#fff6ea);border:1px solid #f5a524;border-radius:20px;padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -123,10 +137,10 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 .header-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .live-badge{grid-column:span 2;justify-content:center}
 .btn{width:100%;min-height:44px}
-.stat-card{padding:12px 10px}
-.stat-val{font-size:34px}
+.stat-card{padding:14px 12px 16px;transform:perspective(640px) rotateX(10deg) rotateY(-6deg)}
+.stat-val{font-size:32px}
 .stat-label{font-size:10px}
-.stat-hint{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat-hint{font-size:12px;white-space:normal}
 .chart-card{padding:12px}
 .chart-head{gap:8px}
 .chart-title{font-size:14px}
@@ -147,8 +161,8 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 .pills-bar{margin:0 -4px 14px;padding:0 4px 10px}
 }
 @media(max-width:420px){
-.vcard-grid{grid-template-columns:1fr}
-.stat-val{font-size:30px}
+.vcard-grid{grid-template-columns:1fr 1fr}
+.stat-val{font-size:28px}
 .brand-title{font-size:15px}
 }
 </style>
@@ -624,20 +638,34 @@ function renderTable(){
     }).join('');
 
     cards.innerHTML = pageItems.map((d,idx)=>{
+        let phone = String(d.contact||'').replace(/\s+/g,'');
+        let call = phone ? `<a href="tel:${phone}">${d.contact}</a>` : '--';
         return `<article class="vcard">
 <div class="vcard-top">
 <div>
 <div class="vcard-reg">${d.reg||'--'}</div>
-<div class="vcard-name">${d.customer||'--'} · ${d.model||'--'}</div>
+<div class="vcard-name">${d.customer||'--'}</div>
 </div>
 ${ageBadge(d.age)}
 </div>
 <div class="vcard-grid">
-<div class="vcard-item vcard-status"><span>Status</span><b><span class="badge ${badgeClass(d.status)}">${d.status||'--'}</span></b></div>
+<div class="vcard-item vcard-wide"><span>Status</span><b><span class="badge ${badgeClass(d.status)}">${d.status||'--'}</span></b></div>
+<div class="vcard-item"><span>Customer</span><b>${d.customer||'--'}</b></div>
+<div class="vcard-item"><span>Contact</span><b>${call}</b></div>
+<div class="vcard-item"><span>Model</span><b>${d.model||'--'}</b></div>
 <div class="vcard-item"><span>Advisor</span><b>${d.advisor||'--'}</b></div>
+<div class="vcard-item"><span>Status Age</span><b>${d.statusage||0}d</b></div>
+<div class="vcard-item"><span>Total Age</span><b>${d.age||0}d</b></div>
 <div class="vcard-item"><span>Insurance</span><b>${d.insurance||'--'}</b></div>
 <div class="vcard-item"><span>RO No.</span><b>${d.ro||'--'}</b></div>
-<div class="vcard-item"><span>Promise</span><b>${d.promise||'--'}</b></div>
+<div class="vcard-item"><span>RO Date</span><b>${d.rodate||'--'}</b></div>
+<div class="vcard-item"><span>RO Status</span><b>${d.rostatus||'--'}</b></div>
+<div class="vcard-item"><span>Promise Date</span><b>${d.promise||'--'}</b></div>
+<div class="vcard-item"><span>Repair</span><b>${d.repair||'--'}</b></div>
+<div class="vcard-item"><span>Status Date</span><b>${d.statusdate||'--'}</b></div>
+<div class="vcard-item"><span>Inward Date</span><b>${d.inward||'--'}</b></div>
+<div class="vcard-item vcard-wide"><span>Panel</span><b>${d.panel||'--'}</b></div>
+<div class="vcard-item vcard-wide"><span>Ageing Bucket</span><b>${d.bucket||'--'}</b></div>
 </div>
 </article>`;
     }).join('');
