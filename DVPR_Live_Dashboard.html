@@ -672,10 +672,21 @@ window.addEventListener('DOMContentLoaded', ()=>{
     renderKPIs();
     if(typeof Chart !== 'undefined') renderGraphicalCharts();
     applyFilters();
-    if(location.protocol.startsWith('http')){
-        setInterval(pollLocalServer, 3000);
-    }
+    let local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if(local) setInterval(pollLocalServer, 3000);
+    else if(location.protocol.startsWith('http')) setInterval(pollRemoteVersion, 15000);
 });
+
+function pollRemoteVersion(){
+    fetch('version.json?t=' + Date.now())
+    .then(r=>r.ok ? r.json() : null)
+    .then(v=>{
+        if(!v || !v.ts) return;
+        if(!window.DASH_TS){ window.DASH_TS = v.ts; return; }
+        if(v.ts !== window.DASH_TS) location.reload();
+    })
+    .catch(()=>{});
+}
 </script>
 </body>
 </html>
