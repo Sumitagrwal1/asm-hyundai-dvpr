@@ -10,37 +10,37 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#eef2f6;--bg-card:#ffffff;--rose-50:#f4f7fb;--rose-100:#e8eef5;--rose-200:#8aa0b8;--rose-300:#6b7f94;--rose-400:#4a6278;--rose-500:#1e3a5f;--rose-600:#16304e;--rose-700:#8a6d3b;--rose-800:#2c5282;--rose-900:#1a2332;--text-main:#1a2332;--text-sub:#3d4a5c;--text-muted:#6b7787;--border:#c5ced8;--border-dark:#1e3a5f;--radius:0;--shadow:3px 3px 0 #1a2332;--pixel:#1e3a5f;--lime:#2d6a4f;--cyan:#2c5282;--gold:#8a6d3b}
+:root{--bg:#f7f7f7;--bg-card:#ffffff;--rose-50:#fafafa;--rose-100:#f0f0f0;--rose-200:#b5b5b5;--rose-300:#8a8a8a;--rose-400:#6a6a6a;--rose-500:#333333;--rose-600:#2a2a2a;--rose-700:#555555;--rose-800:#444444;--rose-900:#222222;--text-main:#222222;--text-sub:#444444;--text-muted:#777777;--border:#d0d0d0;--border-dark:#333333;--radius:0;--shadow:3px 3px 0 #333333;--pixel:#333333;--lime:#555555;--cyan:#444444;--gold:#666666}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;image-rendering:pixelated}
 html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
-body{font-family:'VT323',monospace;background:var(--bg);color:var(--text-main);min-height:100vh;padding:20px 24px 60px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right));background-image:linear-gradient(#e4e8ee 1px,transparent 1px),linear-gradient(90deg,#e4e8ee 1px,transparent 1px);background-size:16px 16px}
-body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:50;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(26,35,50,.04) 3px 4px);opacity:.7}
+body{font-family:'VT323',monospace;background:var(--bg);color:var(--text-main);min-height:100vh;padding:20px 24px 60px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right));background-image:linear-gradient(#ececec 1px,transparent 1px),linear-gradient(90deg,#ececec 1px,transparent 1px);background-size:16px 16px}
+body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:50;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.03) 3px 4px);opacity:.8}
 .container{max-width:1480px;margin:0 auto;width:100%;min-width:0;position:relative;z-index:1}
 .top-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:var(--bg-card);padding:18px 20px;border:3px solid var(--pixel);box-shadow:var(--shadow);margin-bottom:16px}
 .brand{display:flex;align-items:center;gap:14px}
-.brand-icon{width:48px;height:48px;border-radius:0;background:var(--pixel);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Press Start 2P',monospace;font-size:16px;box-shadow:3px 3px 0 #1a2332;flex-shrink:0;border:3px solid #1a2332}
-.brand-title{font-family:'Press Start 2P',monospace;font-size:13px;font-weight:400;color:var(--pixel);line-height:1.5;text-shadow:2px 2px 0 #d5dde6}
+.brand-icon{width:48px;height:48px;border-radius:0;background:#fff;display:flex;align-items:center;justify-content:center;color:#222;font-family:'Press Start 2P',monospace;font-size:16px;box-shadow:3px 3px 0 #333;flex-shrink:0;border:3px solid #333}
+.brand-title{font-family:'Press Start 2P',monospace;font-size:13px;font-weight:400;color:#222;line-height:1.5;text-shadow:2px 2px 0 #e6e6e6}
 .brand-subtitle{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:6px}
 .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.live-badge{display:inline-flex;align-items:center;gap:8px;background:#eef6f1;border:3px solid var(--lime);color:var(--lime);padding:8px 12px;border-radius:0;font-family:'Press Start 2P',monospace;font-size:8px;white-space:nowrap}
-.live-dot{width:8px;height:8px;border-radius:0;background:var(--lime);animation:pulse 1s steps(2) infinite}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:#f4f4f4;border:3px solid #555;color:#444;padding:8px 12px;border-radius:0;font-family:'Press Start 2P',monospace;font-size:8px;white-space:nowrap}
+.live-dot{width:8px;height:8px;border-radius:0;background:#555;animation:pulse 1s steps(2) infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
-.btn{background:var(--pixel);color:#fff;border:3px solid #1a2332;padding:10px 14px;border-radius:0;font-size:9px;font-family:'Press Start 2P',monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:3px 3px 0 #1a2332;white-space:nowrap;min-height:42px}
-.btn:hover{background:#16304e}
-.btn:active{box-shadow:0 0 0 #1a2332;transform:translate(3px,3px)}
-.btn-sec{background:#fff;color:var(--pixel);border:3px solid var(--pixel);box-shadow:3px 3px 0 #1a2332}
-.btn-sec:hover{background:var(--pixel);color:#fff}
+.btn{background:#fff;color:#222;border:3px solid #333;padding:10px 14px;border-radius:0;font-size:9px;font-family:'Press Start 2P',monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:3px 3px 0 #333;white-space:nowrap;min-height:42px}
+.btn:hover{background:#f0f0f0}
+.btn:active{box-shadow:0 0 0 #333;transform:translate(3px,3px)}
+.btn-sec{background:#fff;color:#333;border:3px solid #888;box-shadow:3px 3px 0 #888}
+.btn-sec:hover{background:#f0f0f0;color:#222}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px;margin-bottom:16px}
 .stat-card{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-width:0}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:var(--pixel)}
-.stat-label{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--cyan);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;line-height:1.5}
-.stat-val{font-size:42px;font-weight:400;color:var(--pixel);line-height:1;margin-bottom:6px}
+.stat-label{font-family:'Press Start 2P',monospace;font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;line-height:1.5}
+.stat-val{font-size:42px;font-weight:400;color:#222;line-height:1;margin-bottom:6px}
 .stat-hint{font-size:16px;color:var(--text-muted)}
 .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-bottom:16px}
 .chart-card{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
 .chart-title{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--pixel);line-height:1.5}
-.chart-badge{font-family:'Press Start 2P',monospace;font-size:7px;background:#eef2f6;color:var(--pixel);padding:4px 8px;border:2px solid var(--border)}
+.chart-badge{font-family:'Press Start 2P',monospace;font-size:7px;background:#f4f4f4;color:#444;padding:4px 8px;border:2px solid var(--border)}
 .chart-container{position:relative;flex:1;min-height:260px;width:100%;max-width:100%}
 .chart-container canvas{max-width:100%!important}
 .card-sec{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
@@ -55,22 +55,22 @@ body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:50;bac
 .select-filter{padding:10px 12px;border-radius:0;border:3px solid var(--border);font-family:'VT323',monospace;font-size:18px;color:var(--text-main);background:#fff;outline:none;min-height:44px}
 .pills-bar{display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin-bottom:16px}
 .pill{padding:8px 12px;border-radius:0;font-size:8px;font-family:'Press Start 2P',monospace;background:#fff;color:var(--pixel);border:3px solid var(--border);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.pill:hover,.pill.active{background:var(--pixel);color:#fff;border-color:#1a2332}
+.pill:hover,.pill.active{background:#333;color:#fff;border-color:#222}
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:3px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:18px;text-align:left}
-th{background:#1e3a5f;color:#fff;padding:12px;font-family:'Press Start 2P',monospace;font-size:8px;text-transform:uppercase;border-bottom:3px solid #1a2332;white-space:nowrap}
+th{background:#f0f0f0;color:#222;padding:12px;font-family:'Press Start 2P',monospace;font-size:8px;text-transform:uppercase;border-bottom:3px solid #333;white-space:nowrap}
 td{padding:10px 12px;border-bottom:2px solid var(--border);color:var(--text-main);white-space:nowrap}
-tr:nth-child(even){background:#f4f7fb}
-tr:hover{background:#e8eef5}
+tr:nth-child(even){background:#fafafa}
+tr:hover{background:#f2f2f2}
 .badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:0;font-size:8px;font-family:'Press Start 2P',monospace;line-height:1.3;white-space:nowrap;border:2px solid currentColor}
-.badge-ready{background:#eef6f1;color:var(--lime);border-color:var(--lime)}
-.badge-parts{background:#f7ecee;color:#9b2335;border-color:#9b2335}
-.badge-work{background:#eef2f6;color:var(--cyan);border-color:var(--cyan)}
-.badge-survey{background:#f6f1e8;color:var(--gold);border-color:var(--gold)}
-.badge-other{background:#f4f4f4;color:#5c6570;border-color:#9aa3ad}
-.badge-age-danger{background:#f7ecee;color:#9b2335;border-color:#9b2335}
-.badge-age-warning{background:#f6f1e8;color:var(--gold);border-color:var(--gold)}
-.badge-age-ok{background:#eef6f1;color:var(--lime);border-color:var(--lime)}
+.badge-ready{background:#f4f4f4;color:#333;border-color:#888}
+.badge-parts{background:#f4f4f4;color:#333;border-color:#888}
+.badge-work{background:#f4f4f4;color:#333;border-color:#888}
+.badge-survey{background:#f4f4f4;color:#333;border-color:#888}
+.badge-other{background:#f4f4f4;color:#555;border-color:#bbb}
+.badge-age-danger{background:#f4f4f4;color:#333;border-color:#555}
+.badge-age-warning{background:#f4f4f4;color:#555;border-color:#999}
+.badge-age-ok{background:#f4f4f4;color:#555;border-color:#bbb}
 .pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:16px;padding-top:12px}
 .page-info{font-size:18px;color:var(--text-muted)}
 .page-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
@@ -80,16 +80,16 @@ tr:hover{background:#e8eef5}
 .vcard-reg{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--pixel);word-break:break-word;line-height:1.5}
 .vcard-name{font-size:18px;color:var(--text-sub);margin-top:6px}
 .vcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.vcard-item{background:#f4f7fb;border:2px solid var(--border);border-radius:0;padding:8px 10px}
+.vcard-item{background:#fafafa;border:2px solid var(--border);border-radius:0;padding:8px 10px}
 .vcard-item span{display:block;font-family:'Press Start 2P',monospace;font-size:7px;color:var(--text-muted);text-transform:uppercase}
 .vcard-item b{display:block;font-size:18px;color:var(--text-main);margin-top:4px;word-break:break-word;white-space:normal}
 .vcard-status{grid-column:1/-1}
 .page-btn{padding:8px 12px;border-radius:0;border:3px solid var(--border);background:#fff;font-family:'Press Start 2P',monospace;font-size:8px;color:var(--text-sub);cursor:pointer;min-height:36px}
-.page-btn.active{background:var(--pixel);color:#fff;border-color:#1a2332}
+.page-btn.active{background:#333;color:#fff;border-color:#222}
 .gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:var(--bg-card);border:3px solid var(--pixel);padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
 .gsheet-input{flex:1;min-width:0;padding:10px 12px;border:3px solid var(--border);border-radius:0;font-family:'VT323',monospace;font-size:20px;min-height:44px;background:#fff;color:var(--text-main)}
-.connect-drop{flex:1;min-width:min(100%,240px);border:3px dashed var(--pixel);border-radius:0;padding:18px;text-align:center;background:#f4f7fb;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.6;color:var(--pixel)}
-.connect-drop.drag{border-style:solid;background:#e8eef5;color:var(--cyan)}
+.connect-drop{flex:1;min-width:min(100%,240px);border:3px dashed #888;border-radius:0;padding:18px;text-align:center;background:#fafafa;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.6;color:#333}
+.connect-drop.drag{border-style:solid;background:#f0f0f0;color:#222}
 .connect-help{width:100%;font-size:18px;color:var(--text-muted);line-height:1.35}
 @media(max-width:900px){
 .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -161,11 +161,11 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 </div>
 <div class="stats-grid">
 <div class="stat-card"><div class="stat-label">Total Vehicles</div><div class="stat-val" id="kpiTotal">0</div><div class="stat-hint" id="kpiExcelFile">DVPR 18-10-2026-2026 $99.xlsx</div></div>
-<div class="stat-card"><div class="stat-label">Ready For Delivery</div><div class="stat-val" style="color:#2d6a4f" id="kpiReady">0</div><div class="stat-hint">Ready to Handover</div></div>
-<div class="stat-card"><div class="stat-label">In Bodyshop Work</div><div class="stat-val" style="color:#2c5282" id="kpiWork">0</div><div class="stat-hint">Denting, Paint, Fitting</div></div>
-<div class="stat-card"><div class="stat-label">Parts Pending</div><div class="stat-val" style="color:#9b2335" id="kpiParts">0</div><div class="stat-hint">Waiting For Parts</div></div>
-<div class="stat-card"><div class="stat-label">Survey / Estimate</div><div class="stat-val" style="color:#8a6d3b" id="kpiSurvey">0</div><div class="stat-hint">Surveyor & Approvals</div></div>
-<div class="stat-card"><div class="stat-label">Ageing 21+ Days</div><div class="stat-val" style="color:#7f1d1d" id="kpiAgeing">0</div><div class="stat-hint">Requires Attention</div></div>
+<div class="stat-card"><div class="stat-label">Ready For Delivery</div><div class="stat-val" id="kpiReady">0</div><div class="stat-hint">Ready to Handover</div></div>
+<div class="stat-card"><div class="stat-label">In Bodyshop Work</div><div class="stat-val" id="kpiWork">0</div><div class="stat-hint">Denting, Paint, Fitting</div></div>
+<div class="stat-card"><div class="stat-label">Parts Pending</div><div class="stat-val" id="kpiParts">0</div><div class="stat-hint">Waiting For Parts</div></div>
+<div class="stat-card"><div class="stat-label">Survey / Estimate</div><div class="stat-val" id="kpiSurvey">0</div><div class="stat-hint">Surveyor & Approvals</div></div>
+<div class="stat-card"><div class="stat-label">Ageing 21+ Days</div><div class="stat-val" id="kpiAgeing">0</div><div class="stat-hint">Requires Attention</div></div>
 </div>
 <div class="charts-grid">
 <div class="chart-card">
@@ -243,8 +243,8 @@ let curPill = 'ALL';
 let charts = {};
 
 Chart.defaults.font.family = "'VT323', monospace";
-Chart.defaults.color = '#3d4a5c';
-Chart.defaults.borderColor = '#c5ced8';
+Chart.defaults.color = '#555555';
+Chart.defaults.borderColor = '#d0d0d0';
 
 function badgeClass(st){
     let s = String(st||'');
@@ -311,7 +311,7 @@ function renderGraphicalCharts(){
 
     let sLabels = Object.keys(stageCounts);
     let sVals = Object.values(stageCounts);
-    let sColors = ['#2d6a4f', '#9b2335', '#2c5282', '#4a6278', '#8a6d3b', '#718096', '#1e3a5f'];
+    let sColors = ['#333333', '#555555', '#777777', '#999999', '#444444', '#666666', '#888888'];
 
     if(charts.stage){
         charts.stage.data.datasets[0].data = sVals;
@@ -355,8 +355,8 @@ function renderGraphicalCharts(){
                 datasets: [{
                     label: 'Vehicles',
                     data: aVals,
-                    backgroundColor: '#1e3a5f',
-                    hoverBackgroundColor: '#2c5282',
+                    backgroundColor: '#555555',
+                    hoverBackgroundColor: '#333333',
                     borderRadius: 0
                 }]
             },
@@ -365,7 +365,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#dbe2ea' } },
+                    y: { beginAtZero: true, grid: { color: '#ececec' } },
                     x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
                 }
             }
@@ -384,7 +384,7 @@ function renderGraphicalCharts(){
     });
     let bLabels = Object.keys(bMap);
     let bVals = Object.values(bMap);
-    let bColors = ['#2d6a4f', '#4a7c59', '#c4a35a', '#8a6d3b', '#9b2335', '#7f1d1d'];
+    let bColors = ['#d0d0d0', '#b0b0b0', '#909090', '#707070', '#555555', '#333333'];
 
     if(charts.ageing){
         charts.ageing.data.datasets[0].data = bVals;
@@ -407,7 +407,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#dbe2ea' } },
+                    y: { beginAtZero: true, grid: { color: '#ececec' } },
                     x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
                 }
             }
@@ -433,8 +433,8 @@ function renderGraphicalCharts(){
                 datasets: [{
                     label: 'Vehicles',
                     data: iVals,
-                    backgroundColor: '#4a6278',
-                    hoverBackgroundColor: '#1e3a5f',
+                    backgroundColor: '#777777',
+                    hoverBackgroundColor: '#333333',
                     borderRadius: 0
                 }]
             },
@@ -444,7 +444,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { beginAtZero: true, grid: { color: '#dbe2ea' } },
+                    x: { beginAtZero: true, grid: { color: '#ececec' } },
                     y: { grid: { display: false }, ticks: { font: { weight: '700', size: 10 } } }
                 }
             }
