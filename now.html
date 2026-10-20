@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>ASM Hyundai | Operations Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#fff6ea;--bg-card:#ffffff;--rose-50:#fff1f4;--rose-100:#ffe8cc;--rose-200:#ffb4c4;--rose-300:#ff8aa0;--rose-400:#ff6b88;--rose-500:#ff5a7a;--rose-600:#e44766;--rose-700:#f5a524;--rose-800:#3d8bfd;--rose-900:#2b2118;--text-main:#2b2118;--text-sub:#5a4a3a;--text-muted:#8a7764;--border:#f0d9b8;--border-dark:#2b2118;--radius:20px;--shadow:0 18px 40px rgba(43,33,24,.12);--pixel:#ff5a7a;--lime:#2db57a;--cyan:#3d8bfd;--gold:#f5a524}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:radial-gradient(circle at 12% -10%,#ffe0e8 0 18%,transparent 42%),radial-gradient(circle at 90% 0,#dceaff 0 16%,transparent 40%),radial-gradient(circle at 50% 100%,#fff0c8 0 18%,transparent 45%),var(--bg);color:var(--text-main);min-height:100vh;padding:20px 24px 60px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right))}
+.container{max-width:1480px;margin:0 auto;width:100%;min-width:0;position:relative;z-index:1;perspective:1400px}
+.top-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:linear-gradient(165deg,#ffffff,#fff8ef);padding:18px 20px 22px;border:1px solid #ffe0c4;border-radius:24px;box-shadow:var(--shadow),inset 0 1px 0 #fff;margin-bottom:16px;position:relative;transform:perspective(900px) rotateX(3deg);transform-origin:top}
+.top-header::after{content:'';position:absolute;left:18px;right:18px;bottom:10px;height:6px;border-radius:99px;background:linear-gradient(90deg,#ff5a7a,#f5a524,#2db57a,#3d8bfd,#8b6cff,#ff7a3d)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,#ff9aaf,#ff5a7a 55%,#e44766);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;box-shadow:8px 12px 22px rgba(255,90,122,.35),inset -5px -7px 12px rgba(0,0,0,.14),inset 4px 5px 10px rgba(255,255,255,.45);flex-shrink:0;transform:perspective(420px) rotateX(14deg) rotateY(-16deg)}
+.brand-title{font-size:22px;font-weight:800;color:#ff5a7a;line-height:1.2;letter-spacing:-.03em}
+.brand-subtitle{font-size:12px;color:#3d8bfd;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;font-weight:700}
+.mini-orbit{width:58px;height:58px;perspective:420px;flex-shrink:0}
+.orbit{width:58px;height:58px;position:relative;transform-style:preserve-3d;animation:orbit 14s linear infinite}
+@keyframes orbit{0%{transform:rotateX(22deg) rotateY(0)}100%{transform:rotateX(22deg) rotateY(360deg)}}
+.orbit .ring{position:absolute;inset:6px;border:2px solid #ff5a7a66;border-radius:50%;transform:rotateX(70deg)}
+.orbit .ring:nth-child(2){transform:rotateY(70deg);border-color:#3d8bfd99}
+.orbit .ring:nth-child(3){transform:rotateZ(48deg) rotateY(70deg);border-color:#2db57a99}
+.orbit .core{position:absolute;inset:16px;border-radius:50%;background:linear-gradient(145deg,#fff,#ff5a7a 45%,#8b6cff);box-shadow:0 8px 16px rgba(255,90,122,.4);transform:translateZ(10px)}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:#e9fbf2;border:0;color:#1f8a5a;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 8px 16px rgba(45,181,122,.18),inset 0 1px 0 #fff}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#2db57a;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.btn{background:linear-gradient(180deg,#ff7a94,#ff5a7a);color:#fff;border:0;padding:10px 16px;border-radius:14px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 8px 0 #d63d5c,0 14px 22px rgba(214,61,92,.28);white-space:nowrap;min-height:42px}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(5px);box-shadow:0 3px 0 #d63d5c,0 8px 12px rgba(214,61,92,.2)}
+.btn-sec{background:linear-gradient(180deg,#fff,#eaf2ff);color:#3d8bfd;box-shadow:0 8px 0 #8bb4f0,0 14px 22px rgba(61,139,253,.2)}
+.btn-sec:hover{color:#2563d6}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:14px;margin-bottom:16px}
+.stat-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:18px;box-shadow:var(--shadow),inset 0 1px 0 #fff;position:relative;overflow:hidden;min-width:0;transform:perspective(800px) rotateX(4deg);transform-origin:top;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:perspective(800px) rotateX(0) translateY(-6px);box-shadow:0 26px 50px rgba(43,33,24,.16)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px}
+.stat-card:nth-child(1)::before{background:linear-gradient(90deg,#b39cff,#8b6cff)}
+.stat-card:nth-child(2)::before{background:linear-gradient(90deg,#5fd39a,#2db57a)}
+.stat-card:nth-child(3)::before{background:linear-gradient(90deg,#7eb6ff,#3d8bfd)}
+.stat-card:nth-child(4)::before{background:linear-gradient(90deg,#ff8aa0,#ff5a7a)}
+.stat-card:nth-child(5)::before{background:linear-gradient(90deg,#ffc85a,#f5a524)}
+.stat-card:nth-child(6)::before{background:linear-gradient(90deg,#ff7a7a,#e23d3d)}
+.stat-label{font-size:11px;font-weight:800;color:#8a7764;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;line-height:1.4}
+.stat-val{font-size:38px;font-weight:800;color:#2b2118;line-height:1;margin-bottom:6px;letter-spacing:-.03em}
+.stat-hint{font-size:13px;color:var(--text-muted);font-weight:600}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin-bottom:16px}
+.chart-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:18px 16px 12px;box-shadow:var(--shadow),inset 0 1px 0 #fff;display:flex;flex-direction:column;min-width:0;overflow:visible;transform:perspective(900px) rotateX(3deg);transform-origin:top}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+.chart-title{font-size:15px;font-weight:800;color:#2b2118;line-height:1.3}
+.chart-badge{font-size:11px;font-weight:700;background:#fff1f4;color:#ff5a7a;padding:5px 10px;border-radius:999px;box-shadow:0 6px 12px rgba(255,90,122,.16)}
+.chart-container{position:relative;flex:1;min-height:260px;width:100%;max-width:100%;perspective:720px}
+.chart-container canvas{max-width:100%!important;transform:rotateX(8deg);filter:drop-shadow(8px 16px 18px rgba(43,33,24,.16))}
+.card-sec{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:16px;box-shadow:var(--shadow),inset 0 1px 0 #fff;margin-bottom:16px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:18px;font-weight:800;color:#2b2118;line-height:1.3}
+.controls-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.search-box{flex:1;min-width:min(100%,260px);position:relative}
+.search-input{width:100%;padding:11px 14px 11px 38px;border-radius:14px;border:1px solid #f5a524;font-family:inherit;font-size:15px;color:var(--text-main);background:#fffdf8;outline:none;min-height:44px;box-shadow:inset 0 2px 6px rgba(245,165,36,.12)}
+.search-input:focus{border-color:#ff5a7a;box-shadow:0 0 0 4px rgba(255,90,122,.15)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#f5a524;width:16px;height:16px}
+.filters-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.select-filter{padding:10px 12px;border-radius:14px;border:1px solid #f0d9b8;font-family:inherit;font-size:14px;color:var(--text-main);background:#fff;outline:none;min-height:44px;box-shadow:0 8px 16px rgba(43,33,24,.06)}
+.pills-bar{display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin-bottom:16px}
+.pill{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:#fff;color:#2b2118;border:0;cursor:pointer;white-space:nowrap;flex-shrink:0;box-shadow:0 8px 16px rgba(43,33,24,.08)}
+.pill:hover,.pill.active{background:linear-gradient(180deg,#ff7a94,#ff5a7a);color:#fff;box-shadow:0 8px 16px rgba(255,90,122,.28)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px;box-shadow:inset 0 0 0 1px #ffe0c4}
+table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}
+th{background:linear-gradient(180deg,#ff7a94,#ff5a7a);color:#fff;padding:12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #ffe8cc;color:var(--text-main);white-space:nowrap}
+tr:nth-child(even){background:#fffaf2}
+tr:hover{background:#fff1f4}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap;border:0;box-shadow:0 4px 10px rgba(43,33,24,.08)}
+.badge-ready{background:#e9fbf2;color:#1f8a5a}
+.badge-parts{background:#fff1f4;color:#d63d5c}
+.badge-work{background:#eaf2ff;color:#2563d6}
+.badge-survey{background:#fff6e0;color:#c47d10}
+.badge-other{background:#f6f1ff;color:#6b53c4}
+.badge-age-danger{background:#ffecec;color:#c62828}
+.badge-age-warning{background:#fff6e0;color:#c47d10}
+.badge-age-ok{background:#e9fbf2;color:#1f8a5a}
+.pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:16px;padding-top:12px}
+.page-info{font-size:13px;color:var(--text-muted);font-weight:600}
+.page-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.mobile-cards{display:none}
+.vcard{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.vcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.vcard-reg{font-size:16px;font-weight:800;color:#ff5a7a;word-break:break-word;line-height:1.4}
+.vcard-name{font-size:14px;color:var(--text-sub);margin-top:6px;font-weight:600}
+.vcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vcard-item{background:#fffaf2;border:0;border-radius:14px;padding:8px 10px;box-shadow:inset 0 1px 0 #fff,0 6px 12px rgba(43,33,24,.05)}
+.vcard-item span{display:block;font-size:10px;font-weight:800;color:#8a7764;text-transform:uppercase;letter-spacing:.04em}
+.vcard-item b{display:block;font-size:14px;color:var(--text-main);margin-top:4px;word-break:break-word;white-space:normal}
+.vcard-status{grid-column:1/-1}
+.page-btn{padding:8px 12px;border-radius:12px;border:0;background:#fff;font-family:inherit;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;min-height:36px;box-shadow:0 6px 12px rgba(43,33,24,.08)}
+.page-btn.active{background:linear-gradient(180deg,#7eb6ff,#3d8bfd);color:#fff}
+.gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:linear-gradient(165deg,#fffdf8,#fff6ea);border:1px solid #f5a524;border-radius:20px;padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.gsheet-input{flex:1;min-width:0;padding:10px 12px;border:1px solid #f5a524;border-radius:14px;font-family:inherit;font-size:15px;min-height:44px;background:#fff;color:var(--text-main)}
+.connect-drop{flex:1;min-width:min(100%,240px);border:2px dashed #ff5a7a;border-radius:16px;padding:18px;text-align:center;background:#fff1f4;cursor:pointer;font-size:14px;font-weight:800;line-height:1.5;color:#ff5a7a;box-shadow:inset 0 8px 18px rgba(255,90,122,.08)}
+.connect-drop.drag{border-style:solid;background:#ffe0e6;color:#e44766}
+.connect-help{width:100%;font-size:13px;color:var(--text-muted);line-height:1.45;font-weight:600}
+@media(prefers-reduced-motion:reduce){.orbit,.live-dot,.stat-card,.chart-card,.top-header{animation:none!important;transform:none!important}}
+@media(max-width:900px){
+.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.charts-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(48px,env(safe-area-inset-bottom))}
+.top-header{padding:12px 12px 20px;flex-direction:column;align-items:stretch;gap:10px}
+.brand{gap:10px}
+.brand-icon{width:40px;height:40px;font-size:12px}
+.brand-title{font-size:16px}
+.brand-subtitle{font-size:10px}
+.header-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.live-badge{grid-column:span 2;justify-content:center}
+.btn{width:100%;min-height:44px}
+.stat-card{padding:12px 10px}
+.stat-val{font-size:34px}
+.stat-label{font-size:10px}
+.stat-hint{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chart-card{padding:12px}
+.chart-head{gap:8px}
+.chart-title{font-size:14px}
+.chart-container{min-height:210px;height:210px}
+.card-sec{padding:12px}
+.sec-title{font-size:16px}
+.controls-bar{flex-direction:column;align-items:stretch}
+.search-box{width:100%;min-width:0}
+.filters-wrap{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.select-filter{width:100%;font-size:18px;min-height:44px}
+.filters-wrap .btn-sec{grid-column:span 2}
+.table-wrap{display:none}
+.mobile-cards{display:flex;flex-direction:column;gap:10px}
+.pagination{flex-direction:column;align-items:center;gap:10px}
+.gsheet-box{flex-direction:column;align-items:stretch}
+.gsheet-input{width:100%;min-width:0}
+.connect-drop{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.pills-bar{margin:0 -4px 14px;padding:0 4px 10px}
+}
+@media(max-width:420px){
+.vcard-grid{grid-template-columns:1fr}
+.stat-val{font-size:30px}
+.brand-title{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="top-header">
+<div class="brand">
+<div class="brand-icon">H</div>
+<div class="mini-orbit" aria-hidden="true"><div class="orbit"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div></div>
+<div>
+<div class="brand-title">ASM HYUNDAI BODYSHOP</div>
+<div class="brand-subtitle">3D Operations Dashboard</div>
+</div>
+</div>
+<div class="header-actions">
+<span class="live-badge"><span class="live-dot" id="liveDot"></span><span id="syncText">Live Excel Sync</span></span>
+<button class="btn" onclick="pickExcelFile()">Connect Excel</button>
+<button class="btn btn-sec" onclick="triggerRefresh()">Refresh Data</button>
+</div>
+</header>
+<div class="gsheet-box" id="gsheetBox">
+<div class="connect-drop" id="excelDrop" onclick="pickExcelFile()">CONNECT EXCEL — click or drop .xlsx</div>
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden onchange="if(this.files[0]) loadExcelFile(this.files[0])">
+<input type="text" id="gsheetUrl" class="gsheet-input" placeholder="Or paste a Google Sheet link (Share: Anyone with the link)">
+<button class="btn" onclick="connectGSheet()">Connect Google Sheet</button>
+<button class="btn btn-sec" onclick="disconnectLive()">Disconnect</button>
+<div class="connect-help">Pick any DVPR Excel file, or paste a Google Sheet link. Share the sheet as Anyone with the link. The dashboard refreshes automatically when the sheet is saved.</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-label">Total Vehicles</div><div class="stat-val" style="color:#8b6cff" id="kpiTotal">0</div><div class="stat-hint" id="kpiExcelFile">DVPR 18-10-2026-2026 $99.xlsx</div></div>
+<div class="stat-card"><div class="stat-label">Ready For Delivery</div><div class="stat-val" style="color:#2db57a" id="kpiReady">0</div><div class="stat-hint">Ready to Handover</div></div>
+<div class="stat-card"><div class="stat-label">In Bodyshop Work</div><div class="stat-val" style="color:#3d8bfd" id="kpiWork">0</div><div class="stat-hint">Denting, Paint, Fitting</div></div>
+<div class="stat-card"><div class="stat-label">Parts Pending</div><div class="stat-val" style="color:#ff5a7a" id="kpiParts">0</div><div class="stat-hint">Waiting For Parts</div></div>
+<div class="stat-card"><div class="stat-label">Survey / Estimate</div><div class="stat-val" style="color:#f5a524" id="kpiSurvey">0</div><div class="stat-hint">Surveyor & Approvals</div></div>
+<div class="stat-card"><div class="stat-label">Ageing 21+ Days</div><div class="stat-val" style="color:#e23d3d" id="kpiAgeing">0</div><div class="stat-hint">Requires Attention</div></div>
+</div>
+<div class="charts-grid">
+<div class="chart-card">
+<div class="chart-head"><div class="chart-title">Workshop Stage Breakdown</div><div class="chart-badge">Pipeline</div></div>
+<div class="chart-container"><canvas id="stageChart"></canvas></div>
+</div>
+<div class="chart-card">
+<div class="chart-head"><div class="chart-title">Service Advisor Workload</div><div class="chart-badge" id="advCountHint">Advisors</div></div>
+<div class="chart-container"><canvas id="advisorChart"></canvas></div>
+</div>
+<div class="chart-card">
+<div class="chart-head"><div class="chart-title">Vehicle Ageing Distribution</div><div class="chart-badge">Days in Shop</div></div>
+<div class="chart-container"><canvas id="ageingChart"></canvas></div>
+</div>
+<div class="chart-card">
+<div class="chart-head"><div class="chart-title">Top Insurance Companies</div><div class="chart-badge">Volume</div></div>
+<div class="chart-container"><canvas id="insChart"></canvas></div>
+</div>
+</div>
+<div class="card-sec">
+<div class="sec-head"><div class="sec-title">Vehicle Inventory Matrix</div><div class="stat-hint" id="rowCountHint">0 Vehicles Found</div></div>
+<div class="pills-bar">
+<div class="pill active" onclick="setPill('ALL',this)">All (<span id="pillAll">0</span>)</div>
+<div class="pill" onclick="setPill('PARTS',this)">Parts Pending (<span id="pillParts">0</span>)</div>
+<div class="pill" onclick="setPill('SURVEY',this)">Survey/Estimate (<span id="pillSurvey">0</span>)</div>
+<div class="pill" onclick="setPill('WORK',this)">Bodyshop (<span id="pillWork">0</span>)</div>
+<div class="pill" onclick="setPill('READY',this)">Ready (<span id="pillReady">0</span>)</div>
+<div class="pill" onclick="setPill('AGE21',this)">Age 21+ (<span id="pillAge">0</span>)</div>
+</div>
+<div class="controls-bar">
+<div class="search-box">
+<svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+<input type="text" id="searchInput" class="search-input" placeholder="Search by Reg No, Customer, Model, Advisor, Insurance..." oninput="handleSearch()">
+</div>
+<div class="filters-wrap">
+<select id="advFilter" class="select-filter" onchange="applyFilters()"><option value="">All Advisors</option></select>
+<select id="insFilter" class="select-filter" onchange="applyFilters()"><option value="">All Insurance</option></select>
+<select id="pageLimit" class="select-filter" onchange="changePageSize()"><option value="25">25 per page</option><option value="50">50 per page</option><option value="100">100 per page</option><option value="9999">Show All</option></select>
+<button class="btn btn-sec" onclick="resetFilters()">Reset Filters</button>
+</div>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Reg No.</th>
+<th>Customer Name</th>
+<th>Model</th>
+<th>Advisor</th>
+<th>Status</th>
+<th>Status Age</th>
+<th>Total Age</th>
+<th>Insurance Company</th>
+<th>RO No.</th>
+<th>Promise Date</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+<div class="mobile-cards" id="mobileCards"></div>
+<div class="pagination">
+<div class="page-info" id="pageInfo">Showing 0 of 0</div>
+<div class="page-btns" id="pageBtns"></div>
+</div>
+</div>
+</div>
+<script>
+let RAW_DATA = [{"id": 1, "customer": "AKHILESH RAJPOOT", "contact": "8120328398", "reg": "MP07AG5644", "model": "VENUE", "advisor": "TILAK", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 2, "status": ".Wait For Customer DOCUMENTS", "group": ".Wait For Customer DOCUME", "statusdate": "16/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 2, "customer": "RESHAMA KHAN", "contact": "7879517079", "reg": "MP07ZW6138", "model": "EXTER", "advisor": "PAWAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "10/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "16/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 3, "customer": "BHOLU TOMAR", "contact": "6263225946", "reg": "MP07AK6166", "model": "AURA", "advisor": "SANDEEP", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "30/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "16/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 4, "customer": "MAYANK GUPTA", "contact": "9425487923", "reg": "MP33ZP2171", "model": "AURA", "advisor": "PAWAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "30/11/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "16/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 5, "customer": "", "contact": "", "reg": "MP07CK6684", "model": "", "advisor": "PAWAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 6, "customer": "", "contact": "", "reg": "MP07CK4562", "model": "", "advisor": "SANDEEP", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 7, "customer": "", "contact": "", "reg": "MP07ZG6277", "model": "", "advisor": "SANDEEP", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 8, "customer": "", "contact": "", "reg": "MP07AK6822", "model": "", "advisor": "SANDEEP", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 9, "customer": "", "contact": "", "reg": "MP06CB2270", "model": "", "advisor": "PAWAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "01.Wait For Estimate", "group": "01 Estimate Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 10, "customer": "RAMU SINGH", "contact": "9370193541", "reg": "MP07ZM1326", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617937", "rodate": "18/10/2026", "rostatus": "#N/A", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "02. Intimation Pending", "group": "02 Intimation Pending", "statusdate": "18/10/2026", "panel": "", "inward": "17/10/2026", "age": 1, "bucket": "001 to 010"}, {"id": 11, "customer": "UTTAM SINGH BINORIA", "contact": "9269103482", "reg": "MP07CJ0140", "model": "I 20", "advisor": "VIKAS", "ro": "R202617935", "rodate": "18/10/2026", "rostatus": "#N/A", "promise": "27/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "02. Intimation Pending", "group": "02 Intimation Pending", "statusdate": "18/10/2026", "panel": "", "inward": "17/10/2026", "age": 1, "bucket": "001 to 010"}, {"id": 12, "customer": "DALIP KUMAR MANDA", "contact": "7982214726", "reg": "DL8CBB2663", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617876", "rodate": "17/10/2026", "rostatus": "Open", "promise": "15/11/2026", "insurance": "TATA AIG NON", "repair": "MEDIUM", "statusage": 1, "status": "02. Intimation Pending", "group": "02 Intimation Pending", "statusdate": "17/10/2026", "panel": "", "inward": "15/10/2026", "age": 3, "bucket": "001 to 010"}, {"id": 13, "customer": "ABHAY PRATAP SINGH CHAUHAN", "contact": "7509822584", "reg": "MP07AK9116", "model": "AURA", "advisor": "VIKAS", "ro": "R202617835", "rodate": "17/10/2026", "rostatus": "Open", "promise": "28/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "02. Intimation Pending", "group": "02 Intimation Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 14, "customer": "KAMENDRA GARG", "contact": "9425126306", "reg": "MP07ZN0983", "model": "CRETA", "advisor": "VIKAS", "ro": "R202617815", "rodate": "16/10/2026", "rostatus": "Open", "promise": "28/10/2026", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 1, "status": "02. Intimation Pending", "group": "02 Intimation Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 15, "customer": "PAWAN SINGH TOMAR", "contact": "8269159232", "reg": "MP07CG6987", "model": "SANTRO", "advisor": "VIKAS", "ro": "R202617568", "rodate": "12/10/2026", "rostatus": "Open", "promise": "12/11/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 4, "status": "03.wait for surveyor name", "group": "03 Surveyor Assign", "statusdate": "14/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 16, "customer": "KRISHAN KUMAR SHARMA", "contact": "9826214119", "reg": "MP07AP5395", "model": "VERNA", "advisor": "TILAK", "ro": "R202617315", "rodate": "08/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "GO DIGIT NON", "repair": "MEDIUM", "statusage": 7, "status": "03.wait for surveyor name", "group": "03 Surveyor Assign", "statusdate": "11/10/2026", "panel": "", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 17, "customer": "SHAHIL RAJ", "contact": "8602002121", "reg": "MP13AF8830", "model": "VENUE", "advisor": "VIKAS", "ro": "R202617155", "rodate": "05/10/2026", "rostatus": "Open", "promise": "15/10/2026", "insurance": "UNITED INDIA", "repair": "MEDIUM", "statusage": 9, "status": "03.wait for surveyor name", "group": "03 Surveyor Assign", "statusdate": "09/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 18, "customer": "", "contact": "", "reg": "MP07CJ4625", "model": "", "advisor": "PAWAN", "ro": "R202617936", "rodate": "18/10/2026", "rostatus": "#N/A", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 0, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "18/10/2026", "panel": "", "inward": "18/10/2026", "age": 0, "bucket": "-009 to 000"}, {"id": 19, "customer": "RAVI KANT", "contact": "8109972803", "reg": "MP07CH5635", "model": "VENUE", "advisor": "VIKAS", "ro": "R202617875", "rodate": "17/10/2026", "rostatus": "Open", "promise": "17/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "15/10/2026", "age": 3, "bucket": "001 to 010"}, {"id": 20, "customer": "RANI BHADORIYA", "contact": "7999690607", "reg": "MP07CH9736", "model": "I 20", "advisor": "VIKAS", "ro": "R202617871", "rodate": "17/10/2026", "rostatus": "Open", "promise": "27/10/2026", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "15/10/2026", "age": 3, "bucket": "001 to 010"}, {"id": 21, "customer": "AMAN SINGH", "contact": "6264132763", "reg": "MP07AE2915", "model": "VENUE", "advisor": "SANDEEP", "ro": "R202617869", "rodate": "17/10/2026", "rostatus": "Open", "promise": "29/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 22, "customer": "BHAGIRAT JATAV", "contact": "7024042131", "reg": "MP07AL8306", "model": "CRETA", "advisor": "SANDEEP", "ro": "R202617856", "rodate": "03/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 23, "customer": "ANIL KUMAR MISHRA", "contact": "9630030356", "reg": "MP07ZG9642", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617867", "rodate": "17/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "18/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 24, "customer": "PANKAJ NAGPAL", "contact": "7869814948", "reg": "MP07CG4938", "model": "XCENT", "advisor": "TILAK", "ro": "R202617874", "rodate": "17/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "15/10/2026", "age": 3, "bucket": "001 to 010"}, {"id": 25, "customer": "NARENDRA PRATAP SINGH", "contact": "7987842652", "reg": "MP07CJ2259", "model": "CRETA", "advisor": "TILAK", "ro": "R202617844", "rodate": "03/10/2026", "rostatus": "Open", "promise": "03/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 26, "customer": "KAMAL SINGH PRAJAPATI", "contact": "9753220508", "reg": "MP07CL1336", "model": "I-10", "advisor": "TILAK", "ro": "R202617840", "rodate": "17/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "04.Wait For Surveyor", "group": "04 Survey Pending", "statusdate": "17/10/2026", "panel": "", "inward": "16/10/2026", "age": 2, "bucket": "001 to 010"}, {"id": 27, "customer": "RAVINDRA KUMAR JAIN", "contact": "8839789611", "reg": "MP07AK7253", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617768", "rodate": "15/10/2026", "rostatus": "Open", "promise": "05/11/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "15/10/2026", "age": 3, "bucket": "001 to 010"}, {"id": 28, "customer": "NITIN VITWEKAR", "contact": "9826425719", "reg": "MP07AK7243", "model": "I-10", "advisor": "PAWAN", "ro": "R202617717", "rodate": "15/10/2026", "rostatus": "Open", "promise": "29/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "14/10/2026", "age": 4, "bucket": "001 to 010"}, {"id": 29, "customer": "RAGHVENDRA SINGH DHAKAR", "contact": "7999313323", "reg": "MP06CB0996", "model": "VERNA", "advisor": "IMRAN", "ro": "R202617702", "rodate": "14/10/2026", "rostatus": "Open", "promise": "05/11/2026", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 1, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "17/10/2026", "panel": "", "inward": "14/10/2026", "age": 4, "bucket": "001 to 010"}, {"id": 30, "customer": "ASHWANI SHUKANI", "contact": "8269686185", "reg": "MP07ZA9948", "model": "alcazar", "advisor": "SANDEEP", "ro": "R202617699", "rodate": "14/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 31, "customer": "HARIOM SHARAN SWARNKAR", "contact": "9893060007", "reg": "MP07CH7179", "model": "I -20", "advisor": "TILAK", "ro": "R202617694", "rodate": "14/10/2026", "rostatus": "Open", "promise": "29/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 32, "customer": "PARAS BANSAL", "contact": "8109294940", "reg": "MP07ZM6815", "model": "VENUE", "advisor": "BALDEV", "ro": "R202617640", "rodate": "13/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 33, "customer": "ABHISHEK PAL", "contact": "9755664023", "reg": "MP07ZG2820", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617637", "rodate": "13/10/2026", "rostatus": "Open", "promise": "05/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 34, "customer": "SURYA KANT SHARMA", "contact": "9936663596", "reg": "MP07ZB4807", "model": "AURA", "advisor": "BALDEV", "ro": "R202617630", "rodate": "13/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "16/10/2026", "panel": "", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 35, "customer": "HAKIM SINGH VERMA", "contact": "9893587224", "reg": "MP07AQ2459", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617571", "rodate": "12/10/2026", "rostatus": "Open", "promise": "26/10/2026", "insurance": "LIBERTY", "repair": "MEDIUM", "statusage": 4, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "14/10/2026", "panel": "", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 36, "customer": "MODIT SINGHAL", "contact": "7415152023", "reg": "MP07CH9100", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617570", "rodate": "12/10/2026", "rostatus": "Open", "promise": "15/11/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 5, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "13/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 37, "customer": "ANIL YADAV", "contact": "9977150678", "reg": "MP07AK5529", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617440", "rodate": "10/10/2026", "rostatus": "Open", "promise": "10/11/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 6, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "12/10/2026", "panel": "", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 38, "customer": "ANIL UPADHAYA", "contact": "7400791118", "reg": "MP07AH3862", "model": "AURA", "advisor": "IMRAN", "ro": "R202617438", "rodate": "10/10/2026", "rostatus": "Open", "promise": "", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 4, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "14/10/2026", "panel": "", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 39, "customer": "BHARAT SINGH", "contact": "9399712069", "reg": "MP30ZA0195", "model": "VENUE", "advisor": "VIKAS", "ro": "R202617285", "rodate": "08/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 6, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "12/10/2026", "panel": "", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 40, "customer": "GODHAN SINGH RAJPOOT", "contact": "8103326993", "reg": "MP07CG7517", "model": "I 20", "advisor": "BALDEV", "ro": "R202617233", "rodate": "07/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 8, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "10/10/2026", "panel": "", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 41, "customer": "SANGEETA KISHORE", "contact": "9538030123", "reg": "KA19ML0757", "model": "I-10", "advisor": "BALDEV", "ro": "R202617020", "rodate": "04/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "LIBERTY", "repair": "MEDIUM", "statusage": 9, "status": "05.WAIT FOR SURVEYOR APPROVAL", "group": "05 Survey Approval", "statusdate": "09/10/2026", "panel": "", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 42, "customer": "AJAY PAL SINGH", "contact": "9993485757", "reg": "CH01CU7752", "model": "CRETA", "advisor": "TILAK", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "30/10/2026", "insurance": "HDFC", "repair": "MEDIUM", "statusage": 8, "status": "06.INVESTIGATION", "group": "06 Investigation", "statusdate": "10/10/2026", "panel": "", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 43, "customer": "VINOD KUMAR", "contact": "9893364021", "reg": "MP07CG9134", "model": "VENUE", "advisor": "BALDEV", "ro": "R202617261", "rodate": "07/10/2026", "rostatus": "Open", "promise": "", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "06.INVESTIGATION", "group": "06 Investigation", "statusdate": "16/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 44, "customer": "PREETI SHRIVASTAVA", "contact": "7000162613", "reg": "MP04YV7334", "model": "AURA", "advisor": "GAURAV", "ro": "R202610242", "rodate": "17/06/2026", "rostatus": "#N/A", "promise": "15/08/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 109, "status": "06.INVESTIGATION(TL)", "group": "06 Investigation", "statusdate": "01/07/2026", "panel": "", "inward": "15/06/2026", "age": 125, "bucket": "121 to 130"}, {"id": 45, "customer": "SUNDA GOYAL", "contact": "", "reg": "MP07CJ5964", "model": "", "advisor": "PAWAN", "ro": "R202617660", "rodate": "14/10/2026", "rostatus": "Open", "promise": "", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "16/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 46, "customer": "KAILSH RAM CHARAN", "contact": "8019506060", "reg": "22BH8923C", "model": "I 20", "advisor": "TILAK", "ro": "R202617652", "rodate": "14/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "17/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 47, "customer": "INDREEJ SINGH RAJPUT", "contact": "9827754123", "reg": "MP07CG7130", "model": "I-10", "advisor": "TILAK", "ro": "R202617578", "rodate": "12/10/2026", "rostatus": "Open", "promise": "27/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 3, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "15/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 48, "customer": "POONAM SHARMA", "contact": "7987747626", "reg": "MP06CB2542", "model": "AURA", "advisor": "BALDEV", "ro": "R202617442", "rodate": "10/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "13/10/2026", "panel": "", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 49, "customer": "RAVI KUMAR GARG", "contact": "7023305613", "reg": "MP07ZV9672", "model": "", "advisor": "VIKAS", "ro": "R202617328", "rodate": "09/10/2026", "rostatus": "Open", "promise": "", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "16/10/2026", "panel": "", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 50, "customer": "MUKESH CHANDRA RAJAK", "contact": "9826404169", "reg": "MP07ZU9097", "model": "AURA", "advisor": "PAWAN", "ro": "R202617188", "rodate": "06/10/2026", "rostatus": "Closed", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 9, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "09/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 51, "customer": "NITESH GOYAL", "contact": "8989059527", "reg": "MP07ZV2322", "model": "", "advisor": "PAWAN", "ro": "R202616695", "rodate": "29/09/2026", "rostatus": "Open", "promise": "18/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "07.Wait For Customer Approval", "group": "07 Customer Approval", "statusdate": "13/10/2026", "panel": "", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 52, "customer": "SHREERAM KUSHWAH", "contact": "8827094727", "reg": "MP07AN6093", "model": "EXTER", "advisor": "BALDEV", "ro": "R202617257", "rodate": "07/10/2026", "rostatus": "Open", "promise": "07/11/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "08.WAIT FOR STORE CLEARIFICATION", "group": "08 Store Clarification", "statusdate": "17/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 53, "customer": "GORI BHAI", "contact": "7000148441", "reg": "MP07AK3578", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617698", "rodate": "10/10/2026", "rostatus": "Open", "promise": "10/11/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 4, "status": "09.WAIT FOR PART + AIR  BAG ETC  + FITTING", "group": "09 Parts Pending", "statusdate": "14/10/2026", "panel": "3", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 54, "customer": "SATISH SINGH GARG", "contact": "9479760271", "reg": "MP07ZX7282", "model": "AURA", "advisor": "PAWAN", "ro": "R202617033", "rodate": "04/10/2026", "rostatus": "Open", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 5, "status": "09.WAIT FOR PART + BLOWER + AIR BAG + FITTING", "group": "09 Parts Pending", "statusdate": "13/10/2026", "panel": "", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 55, "customer": "HRADAY MOHAN SHARMA", "contact": "9340855409", "reg": "MP07AE6895", "model": "AURA", "advisor": "BALDEV", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "20/09/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 25, "status": "09.WAIT FOR PART + BODY SHELL+WAIT FOR WORK", "group": "09 Parts Pending", "statusdate": "23/09/2026", "panel": "", "inward": "24/08/2026", "age": 55, "bucket": "051 to 060"}, {"id": 56, "customer": "RAM KUMAR CHOPARA", "contact": "9301100651", "reg": "MP07CF0131", "model": "I 20", "advisor": "BALDEV", "ro": "R202617229", "rodate": "07/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 8, "status": "09.WAIT FOR PART + DOOR ETC + WAIT FOR WORK (VNA)", "group": "09 Parts Pending", "statusdate": "10/10/2026", "panel": "", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 57, "customer": "RAJBIR SINGH", "contact": "7489060169", "reg": "MP07AL8134", "model": "VERNA", "advisor": "VIKAS", "ro": "R202616345", "rodate": "24/09/2026", "rostatus": "Open", "promise": "", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + DOOR HANDLE + PAINTING", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "", "inward": "24/09/2026", "age": 24, "bucket": "021 to 030"}, {"id": 58, "customer": "MANEESH SINGH", "contact": "6263363246", "reg": "MP06ZB6027", "model": "I 20", "advisor": "IMRAN", "ro": "R202617350", "rodate": "09/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 3, "status": "09.WAIT FOR PART + DRL+ FITTING", "group": "09 Parts Pending", "statusdate": "15/10/2026", "panel": "", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 59, "customer": "abhishek agrwal", "contact": "7415636269", "reg": "MP07ZV5775", "model": "I 20", "advisor": "BALDEV", "ro": "R202617419", "rodate": "10/10/2026", "rostatus": "Open", "promise": "25/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 4, "status": "09.WAIT FOR PART + FRONT BUMPER + FITTING", "group": "09 Parts Pending", "statusdate": "14/10/2026", "panel": "2", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 60, "customer": "MAHESH SHARMA", "contact": "8602628960", "reg": "MP07CH9616", "model": "I -20", "advisor": "BALDEV", "ro": "R202617246", "rodate": "07/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + GRILL & TAIL LIGHT + DISMANTLING", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 61, "customer": "PURSHOTTAM SINGH LODHI", "contact": "9329762133", "reg": "MP07CF9944", "model": "CRETA", "advisor": "VIKAS", "ro": "R202616701", "rodate": "29/09/2026", "rostatus": "Open", "promise": "27/09/2026", "insurance": "ROYAL", "repair": "MEDIUM", "statusage": 4, "status": "09.WAIT FOR PART + HEAD LIGHT ETC  + FITTING", "group": "09 Parts Pending", "statusdate": "14/10/2026", "panel": "3", "inward": "11/09/2026", "age": 37, "bucket": "031 to 040"}, {"id": 62, "customer": "VIKRAM SINGH", "contact": "9893102687", "reg": "MP07CF8910", "model": "CRETA", "advisor": "PAWAN", "ro": "R202615955", "rodate": "19/09/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + LH APRON +AIR BAG+ WAIT FOR WORK", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "", "inward": "18/09/2026", "age": 30, "bucket": "021 to 030"}, {"id": 63, "customer": "HARI SINGH BAGHEL", "contact": "7080915058", "reg": "MP07AH0161", "model": "VENUE", "advisor": "PAWAN", "ro": "R202616613", "rodate": "28/09/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 6, "status": "09.WAIT FOR PART + LH APRON ETC+DENTING", "group": "09 Parts Pending", "statusdate": "12/10/2026", "panel": "", "inward": "25/09/2026", "age": 23, "bucket": "021 to 030"}, {"id": 64, "customer": "SANJAY KHAN", "contact": "8103566443", "reg": "MP07ZU9540", "model": "AURA", "advisor": "IMRAN", "ro": "R202617581", "rodate": "12/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + LOCK SET + WAIT FOR WORK", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 65, "customer": "DHARMENDRA SHARMA", "contact": "9131312702", "reg": "MP07AG7329", "model": "AURA", "advisor": "GAURAV", "ro": "R202617504", "rodate": "11/10/2026", "rostatus": "#N/A", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 5, "status": "09.WAIT FOR PART + PILLER  +DENTING", "group": "09 Parts Pending", "statusdate": "13/10/2026", "panel": "", "inward": "18/09/2026", "age": 30, "bucket": "021 to 030"}, {"id": 66, "customer": "GAURAV RAGHUVANSHI", "contact": "9993966557", "reg": "MP33ZL0919", "model": "AURA", "advisor": "IMRAN", "ro": "R202616711", "rodate": "29/09/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 9, "status": "09.WAIT FOR PART + RR   FLOOR  MEMBER + WAIT FOR WORK", "group": "09 Parts Pending", "statusdate": "09/10/2026", "panel": "", "inward": "09/09/2026", "age": 39, "bucket": "031 to 040"}, {"id": 67, "customer": "KAMAL KISHOR MATANI", "contact": "9907058598", "reg": "MP07AJ1862", "model": "VENUE", "advisor": "VIKAS", "ro": "R202617599", "rodate": "13/10/2026", "rostatus": "Open", "promise": "24/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + RR SPOLIR + FITTING", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "2", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 68, "customer": "BRAJKISHOR ARGAL", "contact": "9074078788", "reg": "MP07AH3888", "model": "EXTER", "advisor": "SANDEEP", "ro": "R202617591", "rodate": "13/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + SIDE GLASSETC+FITTING", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "4", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 69, "customer": "SANJAY SINGH RAJPUT", "contact": "7489728712", "reg": "MP06CA7285", "model": "CRETA", "advisor": "IMRAN", "ro": "R202617360", "rodate": "09/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "CASH", "repair": "MEDIUM", "statusage": 5, "status": "09.WAIT FOR PART + SKITE PLATE + FITTING", "group": "09 Parts Pending", "statusdate": "13/10/2026", "panel": "15", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 70, "customer": "DEVENDRA SHARMA", "contact": "8319997341", "reg": "MP09AT4030", "model": "CRETA", "advisor": "IMRAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "10/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "09.WAIT FOR PART + WIND SHILD & TAIL LIGHT + WAIT FOR WORK", "group": "09 Parts Pending", "statusdate": "16/10/2026", "panel": "", "inward": "27/09/2026", "age": 21, "bucket": "021 to 030"}, {"id": 71, "customer": "HAVALDAR SINGH", "contact": "7974256100", "reg": "MP07ZL9671", "model": "CRETA", "advisor": "IMRAN", "ro": "R202617732", "rodate": "15/10/2026", "rostatus": "Open", "promise": "12/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 5, "status": "09.WAIT FOR PART+ DOOR GLASS ETC + FITIING", "group": "09 Parts Pending", "statusdate": "13/10/2026", "panel": "7", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 72, "customer": "ANGOORI DEVI", "contact": "9644612633", "reg": "MP06ZC4257", "model": "AURA", "advisor": "BALDEV", "ro": "R202616538", "rodate": "27/09/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 1, "status": "09.WAIT FOR PART+DASH BOARD ETC+ DENTING", "group": "09 Parts Pending", "statusdate": "17/10/2026", "panel": "", "inward": "22/09/2026", "age": 26, "bucket": "021 to 030"}, {"id": 73, "customer": "JAI SHARMA", "contact": "9584767361", "reg": "MP07CG4686", "model": "I-20", "advisor": "IMRAN", "ro": "R202616545", "rodate": "27/09/2026", "rostatus": "Open", "promise": "15/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "09.WAIT FOR PART+SHOURD +FITTING", "group": "09 Parts Pending", "statusdate": "17/10/2026", "panel": "2", "inward": "27/09/2026", "age": 21, "bucket": "021 to 030"}, {"id": 74, "customer": "ROOPESH RAJPUT", "contact": "9981851033", "reg": "MP07AD2260", "model": "EXTER", "advisor": "BALDEV", "ro": "R202616542", "rodate": "27/09/2026", "rostatus": "Open", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 3, "status": "09.Wait For Parts +CROSSMEMBER ETC + DENTING", "group": "09 Parts Pending", "statusdate": "15/10/2026", "panel": "", "inward": "23/09/2026", "age": 25, "bucket": "021 to 030"}, {"id": 75, "customer": "BANWARI LAL SIKARWAR", "contact": "8899710258", "reg": "MP07CL1994", "model": "alcazar", "advisor": "VIKAS", "ro": "R202617340", "rodate": "09/10/2026", "rostatus": "Open", "promise": "23/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "11.DISMANTLING", "group": "11 Dismantling", "statusdate": "17/10/2026", "panel": "", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 76, "customer": "HARI NANDAN SHARMA", "contact": "7828899456", "reg": "MP07ZG3595", "model": "I-20", "advisor": "PAWAN", "ro": "R202616698", "rodate": "29/09/2026", "rostatus": "Open", "promise": "10/12/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 12, "status": "12.MECH WORK", "group": "12 Mech Work", "statusdate": "06/10/2026", "panel": "", "inward": "09/09/2026", "age": 39, "bucket": "031 to 040"}, {"id": 77, "customer": "BHUPENDRA RANA", "contact": "8517950318", "reg": "MP07ZF7087", "model": "CRETA", "advisor": "BALDEV", "ro": "R202617331", "rodate": "09/10/2026", "rostatus": "Open", "promise": "25/09/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 1, "status": "13.Denting", "group": "13 Denting", "statusdate": "17/10/2026", "panel": "", "inward": "07/09/2026", "age": 41, "bucket": "041 to 050"}, {"id": 78, "customer": "PIYUSH JOTWANI", "contact": "6261341871", "reg": "MP07AE8053", "model": "VENUE", "advisor": "BALDEV", "ro": "R202616319", "rodate": "24/09/2026", "rostatus": "Open", "promise": "", "insurance": "Not Specified", "repair": "MEDIUM", "statusage": 9, "status": "13.Denting (HOLD)", "group": "13 Denting", "statusdate": "09/10/2026", "panel": "", "inward": "22/09/2026", "age": 26, "bucket": "021 to 030"}, {"id": 79, "customer": "BHAN SINGH TOMAR", "contact": "9518318166", "reg": "MP30C7302", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617210", "rodate": "06/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "ICICI NON", "repair": "MEDIUM", "statusage": 0, "status": "14.Painting", "group": "14 Painting", "statusdate": "18/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 80, "customer": "NEELESH SINGH TOMAR", "contact": "8319370271", "reg": "MP07AG8426", "model": "VENUE", "advisor": "TILAK", "ro": "R202617559", "rodate": "12/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 1, "status": "14.Painting", "group": "14 Painting", "statusdate": "17/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 81, "customer": "", "contact": "", "reg": "MP07AD3266", "model": "", "advisor": "PAWAN", "ro": "R202617661", "rodate": "14/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "2", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 82, "customer": "SACHIN BANSAL", "contact": "8770123326", "reg": "HR26EX2975", "model": "VERNA", "advisor": "VIKAS", "ro": "R202617620", "rodate": "13/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "CHOLA MS", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "2", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 83, "customer": "RAHUL SINGH", "contact": "9340257639", "reg": "MP07CJ5804", "model": "CRETA", "advisor": "TILAK", "ro": "R202617607", "rodate": "13/10/2026", "rostatus": "Open", "promise": "28/10/2026", "insurance": "INDUS I", "repair": "MEDIUM", "statusage": 1, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "17/10/2026", "panel": "", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 84, "customer": "RUBY ALI", "contact": "7974101079", "reg": "MP07CL1798", "model": "I-10", "advisor": "VIKAS", "ro": "R202617603", "rodate": "13/10/2026", "rostatus": "Open", "promise": "23/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "16/10/2026", "panel": "2", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 85, "customer": "ANURAG SINGH", "contact": "9340901078", "reg": "MP07AQ6997", "model": "AURA", "advisor": "BALDEV", "ro": "R202617593", "rodate": "13/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "17/10/2026", "panel": "", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 86, "customer": "CHANDAN ARYA", "contact": "9232084052", "reg": "MP07CH0033", "model": "CRETA", "advisor": "VIKAS", "ro": "R202617560", "rodate": "12/10/2026", "rostatus": "Open", "promise": "23/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 87, "customer": "YOGENDRA SINGH", "contact": "7610693648", "reg": "MP07AL9048", "model": "AURA", "advisor": "IMRAN", "ro": "R202617436", "rodate": "10/10/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "17/10/2026", "panel": "3", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 88, "customer": "PAWAN KUMAR", "contact": "9131664017", "reg": "MP07CJ7303", "model": "I 20", "advisor": "TILAK", "ro": "R202617412", "rodate": "10/10/2026", "rostatus": "Open", "promise": "24/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "17/10/2026", "panel": "3", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 89, "customer": "JAY SINGH SIKARWAR", "contact": "9425196892", "reg": "MP07ZX7984", "model": "CRETA", "advisor": "IMRAN", "ro": "R202617349", "rodate": "09/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 90, "customer": "SATISH", "contact": "7879159507", "reg": "MP06ZE5813", "model": "VENUE", "advisor": "TILAK", "ro": "R202617303", "rodate": "08/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 1, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "17/10/2026", "panel": "2", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 91, "customer": "RAVI MAVAI", "contact": "9770011467", "reg": "MP06ZA1827", "model": "CRETA", "advisor": "VIKAS", "ro": "R202617273", "rodate": "08/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 92, "customer": "RAJABETI", "contact": "6263377812", "reg": "MP07ZX3479", "model": "AURA", "advisor": "PAWAN", "ro": "R202616756", "rodate": "30/09/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "NI NON", "repair": "MEDIUM", "statusage": 3, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "15/10/2026", "panel": "1", "inward": "14/09/2026", "age": 34, "bucket": "031 to 040"}, {"id": 93, "customer": "RAHUL SINGH RAJAWAT", "contact": "9685345274", "reg": "MP30ZG0801", "model": "AURA", "advisor": "PAWAN", "ro": "R202616676", "rodate": "29/09/2026", "rostatus": "Open", "promise": "05/11/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "16/10/2026", "panel": "8", "inward": "27/09/2026", "age": 21, "bucket": "021 to 030"}, {"id": 94, "customer": "SHUBHAM SIKARWAR", "contact": "9893212265", "reg": "MP07AR8111", "model": "CRETA", "advisor": "PAWAN", "ro": "R202616511", "rodate": "27/09/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "18/10/2026", "panel": "", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 95, "customer": "DAULAT SINGH TOMAR", "contact": "8349229501", "reg": "MP07CH2350", "model": "CRETA", "advisor": "IMRAN", "ro": "R202614947", "rodate": "03/09/2026", "rostatus": "Open", "promise": "20/09/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 3, "status": "15.Fitting", "group": "15 Fitting", "statusdate": "15/10/2026", "panel": "6", "inward": "01/09/2026", "age": 47, "bucket": "041 to 050"}, {"id": 96, "customer": "SATENDRA SINGH", "contact": "9926705432", "reg": "MP30C7526", "model": "I 20", "advisor": "BALDEV", "ro": "R202617005", "rodate": "04/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 3, "status": "15.Fitting (FINAL PHOTO)", "group": "15 Fitting", "statusdate": "15/10/2026", "panel": "4", "inward": "03/10/2026", "age": 15, "bucket": "011 to 020"}, {"id": 97, "customer": "SHYAMU SINGH", "contact": "6351763664", "reg": "MP07ZL8397", "model": "VENUE", "advisor": "BALDEV", "ro": "R202616330", "rodate": "26/07/2026", "rostatus": "Open", "promise": "20/08/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 10, "status": "15.Fitting (INSURANCE DECISION )", "group": "15 Fitting", "statusdate": "08/10/2026", "panel": "", "inward": "23/07/2026", "age": 87, "bucket": "081 to 090"}, {"id": 98, "customer": "ARVIND SINGH GURJAR", "contact": "9926713306", "reg": "MP07ZR5569", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617668", "rodate": "14/10/2026", "rostatus": "Open", "promise": "17/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "2", "inward": "04/10/2026", "age": 14, "bucket": "011 to 020"}, {"id": 99, "customer": "ASHUTOSH", "contact": "8532094449", "reg": "23BH1728B", "model": "VERNA", "advisor": "SANDEEP", "ro": "R202617573", "rodate": "12/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "HDFC", "repair": "MEDIUM", "statusage": 1, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "17/10/2026", "panel": "", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 100, "customer": "KULMEET SINGH", "contact": "9826615466", "reg": "MP07ZV2220", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617550", "rodate": "12/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "1", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 101, "customer": "TANU SHARMA", "contact": "7987385845", "reg": "MP07ZX8868", "model": "VENUE", "advisor": "PAWAN", "ro": "R202617536", "rodate": "12/10/2026", "rostatus": "Open", "promise": "26/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "4", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 102, "customer": "NARAYAN SINGH", "contact": "7566141400", "reg": "MP07ZY0975", "model": "VERNA", "advisor": "BALDEV", "ro": "R202617425", "rodate": "10/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "4", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 103, "customer": "PAWAN SHARMA", "contact": "8120888939", "reg": "MP07CK3204", "model": "AURA", "advisor": "BALDEV", "ro": "R202617346", "rodate": "09/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "17/10/2026", "panel": "1", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 104, "customer": "VINAY KAUSHIK", "contact": "9425309025", "reg": "MP07CL8880", "model": "CRETA", "advisor": "VIKAS", "ro": "R202617312", "rodate": "08/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "4", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 105, "customer": "SACHIN MITTAL", "contact": "9826285908", "reg": "MP06CB1622", "model": "I-10", "advisor": "TILAK", "ro": "R202617297", "rodate": "08/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "2", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 106, "customer": "SONAM GUPTA", "contact": "9893018421", "reg": "MP07AJ6655", "model": "I 20", "advisor": "TILAK", "ro": "R202617295", "rodate": "08/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 107, "customer": "JASWANT SINGH", "contact": "8349699169", "reg": "MP07ZV1512", "model": "EXTER", "advisor": "PAWAN", "ro": "R202617241", "rodate": "07/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "2", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 108, "customer": "LALIT MANJHI", "contact": "8815658665", "reg": "MP07ZC7109", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617217", "rodate": "07/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 109, "customer": "LALIT MOHAN SHARMA", "contact": "6260099879", "reg": "MP13AG0310", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617151", "rodate": "05/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "LIBERTY", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 110, "customer": "DINESH KUMAR", "contact": "9926549927", "reg": "MP07ZR1535", "model": "EXTER", "advisor": "VIKAS", "ro": "R202617066", "rodate": "04/10/2026", "rostatus": "Open", "promise": "13/10/2026", "insurance": "NI NON", "repair": "MEDIUM", "statusage": 1, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "17/10/2026", "panel": "", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 111, "customer": "MAHENDRA KUMAR GUPTA", "contact": "8738819322", "reg": "UP94AL7525", "model": "VERNA", "advisor": "VIKAS", "ro": "R202616728", "rodate": "29/09/2026", "rostatus": "Billed & not Delivered", "promise": "13/10/2026", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 3, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "15/10/2026", "panel": "5", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 112, "customer": "MS KAHNA GARMENTS", "contact": "9300487854", "reg": "MP07ZA8114", "model": "VERNA", "advisor": "TILAK", "ro": "R202616714", "rodate": "29/09/2026", "rostatus": "Open", "promise": "11/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "18/10/2026", "panel": "2", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 113, "customer": "MAHESH GAUTAM", "contact": "7000334032", "reg": "MP07ZX5011", "model": "CRETA", "advisor": "GAURAV", "ro": "R202613947", "rodate": "18/08/2026", "rostatus": "#N/A", "promise": "05/09/2026", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 1, "status": "16.FINAL INSPECTION", "group": "16 Final Inspection", "statusdate": "17/10/2026", "panel": "5", "inward": "18/08/2026", "age": 61, "bucket": "061 to 070"}, {"id": 114, "customer": "SUMIT SHRIVASTVA", "contact": "8602000330", "reg": "UP93BB2587", "model": "I-10", "advisor": "VIKAS", "ro": "R202617657", "rodate": "14/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "", "inward": "13/10/2026", "age": 5, "bucket": "001 to 010"}, {"id": 115, "customer": "NEHA KHAN", "contact": "7000104347", "reg": "MP07AK5120", "model": "CRETA", "advisor": "TILAK", "ro": "R202617639", "rodate": "08/10/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 116, "customer": "BHOJRAJ SHARMA", "contact": "9131915354", "reg": "MP07CF3713", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617576", "rodate": "12/10/2026", "rostatus": "Open", "promise": "24/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "1", "inward": "12/10/2026", "age": 6, "bucket": "001 to 010"}, {"id": 117, "customer": "SUDHIR SINGH YADAV", "contact": "7748920465", "reg": "MP07CJ4024", "model": "AURA", "advisor": "IMRAN", "ro": "R202617552", "rodate": "12/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "1", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 118, "customer": "DHARMENDRA DHAKAR", "contact": "9907614735", "reg": "MP07ZS1227", "model": "VENUE", "advisor": "IMRAN", "ro": "R202617507", "rodate": "11/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "11/10/2026", "age": 7, "bucket": "001 to 010"}, {"id": 119, "customer": "MUNNESH KUMAR", "contact": "8819887283", "reg": "MP07AK5198", "model": "AURA", "advisor": "IMRAN", "ro": "R202617496", "rodate": "11/10/2026", "rostatus": "Billed & not Delivered", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 4, "status": "17.Ready", "group": "17 Ready", "statusdate": "14/10/2026", "panel": "3", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 120, "customer": "DEEPAK SONI", "contact": "9425773310", "reg": "MP07CG5688", "model": "XCENT", "advisor": "VIKAS", "ro": "R202617441", "rodate": "10/10/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "KOTAK MAHINDRA", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "10/10/2026", "age": 8, "bucket": "001 to 010"}, {"id": 121, "customer": "SATYAM", "contact": "9340051825", "reg": "MP07ZS4908", "model": "VENUE", "advisor": "TILAK", "ro": "R202617424", "rodate": "10/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 122, "customer": "SATISH DHAKAR", "contact": "8962087209", "reg": "MP07AN1299", "model": "AURA", "advisor": "PAWAN", "ro": "R202617401", "rodate": "10/10/2026", "rostatus": "Open", "promise": "24/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "1", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 123, "customer": "PRAMOD", "contact": "7879784952", "reg": "MP07ZN6404", "model": "VERNA", "advisor": "IMRAN", "ro": "R202617394", "rodate": "10/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "3", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 124, "customer": "RAJA MAGRAIYA", "contact": "9752408267", "reg": "MP07ZH0355", "model": "I 20", "advisor": "TILAK", "ro": "R202617389", "rodate": "10/10/2026", "rostatus": "Open", "promise": "22/10/2026", "insurance": "NI NON", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 125, "customer": "SURENDRA SINGH", "contact": "7224986076", "reg": "MP07ZW5225", "model": "CRETA", "advisor": "VIKAS", "ro": "R202617348", "rodate": "09/10/2026", "rostatus": "Closed", "promise": "", "insurance": "SBI NON", "repair": "MEDIUM", "statusage": 4, "status": "17.Ready", "group": "17 Ready", "statusdate": "14/10/2026", "panel": "3", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 126, "customer": "SHIVAM SINGH GURAIYA", "contact": "9009781001", "reg": "MP07CF8140", "model": "I 20", "advisor": "BALDEV", "ro": "R202617347", "rodate": "09/10/2026", "rostatus": "Closed", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "2", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 127, "customer": "SURENDRA", "contact": "7987409107", "reg": "MP07AJ9787", "model": "VENUE", "advisor": "BALDEV", "ro": "R202617320", "rodate": "08/10/2026", "rostatus": "Closed", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 2, "status": "17.Ready", "group": "17 Ready", "statusdate": "16/10/2026", "panel": "", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 128, "customer": "NITIN KHURANA", "contact": "7828225945", "reg": "MP07AL6777", "model": "VENUE", "advisor": "TILAK", "ro": "R202617317", "rodate": "08/10/2026", "rostatus": "Billed & not Delivered", "promise": "18/10/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 2, "status": "17.Ready", "group": "17 Ready", "statusdate": "16/10/2026", "panel": "4", "inward": "08/10/2026", "age": 10, "bucket": "001 to 010"}, {"id": 129, "customer": "RENU VIG", "contact": "7771077500", "reg": "MP07CJ0496", "model": "AURA", "advisor": "TILAK", "ro": "R202617307", "rodate": "08/10/2026", "rostatus": "Billed & not Delivered", "promise": "20/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "2", "inward": "07/10/2026", "age": 11, "bucket": "011 to 020"}, {"id": 130, "customer": "MR. SANTOSH SHARM", "contact": "88188 84444", "reg": "MP07ZG7776", "model": "CRETA", "advisor": "TILAK", "ro": "R202617263", "rodate": "07/10/2026", "rostatus": "Billed & not Delivered", "promise": "", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "17.Ready", "group": "17 Ready", "statusdate": "13/10/2026", "panel": "2", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 131, "customer": "PRADYUMN SINGH", "contact": "8989133913", "reg": "MP07CG2385", "model": "I 20", "advisor": "BALDEV", "ro": "R202617240", "rodate": "07/10/2026", "rostatus": "Open", "promise": "17/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "1", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 132, "customer": "LOKESH KUSHWAH", "contact": "6006259672", "reg": "MP07CL2737", "model": "AURA", "advisor": "BALDEV", "ro": "R202617235", "rodate": "07/10/2026", "rostatus": "Closed", "promise": "22/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "1", "inward": "06/10/2026", "age": 12, "bucket": "011 to 020"}, {"id": 133, "customer": "YOGENDRA SHARMA", "contact": "8982713540", "reg": "MP07AG8375", "model": "EXTER", "advisor": "BALDEV", "ro": "R202617221", "rodate": "07/10/2026", "rostatus": "Billed & not Delivered", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 4, "status": "17.Ready", "group": "17 Ready", "statusdate": "14/10/2026", "panel": "", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 134, "customer": "VISHAL SHARMA", "contact": "7999686964", "reg": "MP07ZJ8498", "model": "AURA", "advisor": "TILAK", "ro": "R202617167", "rodate": "06/10/2026", "rostatus": "Billed & not Delivered", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 7, "status": "17.Ready", "group": "17 Ready", "statusdate": "11/10/2026", "panel": "1", "inward": "05/10/2026", "age": 13, "bucket": "011 to 020"}, {"id": 135, "customer": "RAMHET  SINGH", "contact": "9993384955", "reg": "MP07ZM2539", "model": "EXTER", "advisor": "IMRAN", "ro": "R202617146", "rodate": "05/10/2026", "rostatus": "Billed & not Delivered", "promise": "20/10/2026", "insurance": "NI NON", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "", "inward": "04/10/2026", "age": 14, "bucket": "011 to 020"}, {"id": 136, "customer": "DIGVIJAY SINGH BHADORIYA", "contact": "9826274484", "reg": "MP30C6098", "model": "CRETA", "advisor": "IMRAN", "ro": "R202617124", "rodate": "05/10/2026", "rostatus": "Closed", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "1", "inward": "04/10/2026", "age": 14, "bucket": "011 to 020"}, {"id": 137, "customer": "ANKIT SINGH YADAV", "contact": "7415402546", "reg": "MP07ZV0051", "model": "EXTER", "advisor": "PAWAN", "ro": "R202617094", "rodate": "05/10/2026", "rostatus": "Closed", "promise": "", "insurance": "SBI NON", "repair": "MEDIUM", "statusage": 2, "status": "17.Ready", "group": "17 Ready", "statusdate": "16/10/2026", "panel": "3", "inward": "04/10/2026", "age": 14, "bucket": "011 to 020"}, {"id": 138, "customer": "LUVKUSH", "contact": "7440767611", "reg": "MP07ZG9737", "model": "I 20", "advisor": "TILAK", "ro": "R202617068", "rodate": "04/10/2026", "rostatus": "Billed & not Delivered", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "17.Ready", "group": "17 Ready", "statusdate": "13/10/2026", "panel": "2", "inward": "04/10/2026", "age": 14, "bucket": "011 to 020"}, {"id": 139, "customer": "HARENDRA SINGH GURJAR", "contact": "9617435674", "reg": "MP07CG8107", "model": "I-20", "advisor": "IMRAN", "ro": "R202616997", "rodate": "19/08/2026", "rostatus": "Open", "promise": "", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 11, "status": "17.Ready", "group": "17 Ready", "statusdate": "07/10/2026", "panel": "", "inward": "19/08/2026", "age": 60, "bucket": "051 to 060"}, {"id": 140, "customer": "VISHNU YADAV", "contact": "8269874481", "reg": "MP07CG9809", "model": "CRETA", "advisor": "IMRAN", "ro": "R202616976", "rodate": "03/10/2026", "rostatus": "Billed & not Delivered", "promise": "", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "3", "inward": "02/10/2026", "age": 16, "bucket": "011 to 020"}, {"id": 141, "customer": "ABHISHEK YADAV", "contact": "9827006206", "reg": "MP07ZN5553", "model": "I-10", "advisor": "PAWAN", "ro": "R202616975", "rodate": "03/10/2026", "rostatus": "Billed & not Delivered", "promise": "12/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "17.Ready", "group": "17 Ready", "statusdate": "13/10/2026", "panel": "3", "inward": "02/10/2026", "age": 16, "bucket": "011 to 020"}, {"id": 142, "customer": "PRASANJIT MANDOL", "contact": "8305770109", "reg": "MP07CJ1519", "model": "I 20", "advisor": "PAWAN", "ro": "R202616972", "rodate": "03/10/2026", "rostatus": "Open", "promise": "25/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "", "inward": "03/10/2026", "age": 15, "bucket": "011 to 020"}, {"id": 143, "customer": "GODREJ CONSUMER PRODUCTS LTD", "contact": "9893034257", "reg": "MP07ZE4394", "model": "I-10", "advisor": "IMRAN", "ro": "R202616971", "rodate": "03/10/2026", "rostatus": "Billed & not Delivered", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 7, "status": "17.Ready", "group": "17 Ready", "statusdate": "11/10/2026", "panel": "1", "inward": "02/10/2026", "age": 16, "bucket": "011 to 020"}, {"id": 144, "customer": "MUKESH BAGHEL", "contact": "9179783127", "reg": "MP06ZC4467", "model": "I-10", "advisor": "PAWAN", "ro": "R202616970", "rodate": "03/10/2026", "rostatus": "Billed & not Delivered", "promise": "14/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "17.Ready", "group": "17 Ready", "statusdate": "13/10/2026", "panel": "4", "inward": "30/09/2026", "age": 18, "bucket": "011 to 020"}, {"id": 145, "customer": "GUNJAN YADAV", "contact": "7000757172", "reg": "MP07ZB7888", "model": "TUCSON", "advisor": "TILAK", "ro": "R202616962", "rodate": "03/10/2026", "rostatus": "Billed & not Delivered", "promise": "18/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "3", "inward": "02/10/2026", "age": 16, "bucket": "011 to 020"}, {"id": 146, "customer": "CHANDANI DEVI", "contact": "9826159078", "reg": "MP07CH1491", "model": "CRETA", "advisor": "BALDEV", "ro": "R202616899", "rodate": "02/10/2026", "rostatus": "#N/A", "promise": "20/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "1", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 147, "customer": "VIKASH UPADHYAY", "contact": "7804913895", "reg": "MP06CB2895", "model": "AURA", "advisor": "IMRAN", "ro": "R202616873", "rodate": "02/10/2026", "rostatus": "Closed", "promise": "15/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "17.Ready", "group": "17 Ready", "statusdate": "16/10/2026", "panel": "", "inward": "01/10/2026", "age": 17, "bucket": "011 to 020"}, {"id": 148, "customer": "AKIB HASHAN", "contact": "8959907295", "reg": "MP07CG8352", "model": "I 20", "advisor": "TILAK", "ro": "R202616834", "rodate": "01/10/2026", "rostatus": "Open", "promise": "12/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "1", "inward": "30/09/2026", "age": 18, "bucket": "011 to 020"}, {"id": 149, "customer": "SONU SINGH", "contact": "7247823860", "reg": "MP07AJ0349", "model": "AURA", "advisor": "BALDEV", "ro": "R202616720", "rodate": "29/09/2026", "rostatus": "Open", "promise": "", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "", "inward": "20/09/2026", "age": 28, "bucket": "021 to 030"}, {"id": 150, "customer": "RAGHURAJ SINGH GURJAR", "contact": "9926186418", "reg": "MP06CB3037", "model": "CRETA", "advisor": "BALDEV", "ro": "R202616718", "rodate": "29/09/2026", "rostatus": "#N/A", "promise": "10/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 8, "status": "17.Ready", "group": "17 Ready", "statusdate": "10/10/2026", "panel": "5", "inward": "28/09/2026", "age": 20, "bucket": "011 to 020"}, {"id": 151, "customer": "ASHOK KANSANA", "contact": "9826647905", "reg": "MP07ZV9652", "model": "VENUE", "advisor": "BALDEV", "ro": "R202616716", "rodate": "29/09/2026", "rostatus": "#N/A", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 2, "status": "17.Ready", "group": "17 Ready", "statusdate": "16/10/2026", "panel": "", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 152, "customer": "MANOJ GARG", "contact": "9826305437", "reg": "MP07ZW4979", "model": "CRETA", "advisor": "BALDEV", "ro": "R202616699", "rodate": "29/09/2026", "rostatus": "Billed & not Delivered", "promise": "10/10/2026", "insurance": "SHREERAM", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "2", "inward": "25/09/2026", "age": 23, "bucket": "021 to 030"}, {"id": 153, "customer": "DEEP CHANDRA", "contact": "8109115597", "reg": "MP07AH9472", "model": "EXTER", "advisor": "TILAK", "ro": "R202616689", "rodate": "29/09/2026", "rostatus": "Closed", "promise": "10/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 4, "status": "17.Ready", "group": "17 Ready", "statusdate": "14/10/2026", "panel": "", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 154, "customer": "ANUBHA THAKKAR", "contact": "6260039901", "reg": "MP07CG5416", "model": "VENUE", "advisor": "TILAK", "ro": "R202616685", "rodate": "29/09/2026", "rostatus": "#N/A", "promise": "15/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 10, "status": "17.Ready", "group": "17 Ready", "statusdate": "08/10/2026", "panel": "1", "inward": "28/09/2026", "age": 20, "bucket": "011 to 020"}, {"id": 155, "customer": "", "contact": "", "reg": "MP07CD8756", "model": "", "advisor": "ASHU", "ro": "R202616661", "rodate": "29/09/2026", "rostatus": "Billed & not Delivered", "promise": "", "insurance": "CASH", "repair": "MEDIUM", "statusage": 16, "status": "17.Ready", "group": "17 Ready", "statusdate": "02/10/2026", "panel": "", "inward": "29/09/2026", "age": 19, "bucket": "011 to 020"}, {"id": 156, "customer": "RAJENDRA KUMAR", "contact": "9425114433", "reg": "MP07ZC7733", "model": "I 20", "advisor": "ASHU", "ro": "R202616612", "rodate": "28/09/2026", "rostatus": "Billed & not Delivered", "promise": "10/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 14, "status": "17.Ready", "group": "17 Ready", "statusdate": "04/10/2026", "panel": "1", "inward": "28/09/2026", "age": 20, "bucket": "011 to 020"}, {"id": 157, "customer": "MANISH SHIVHARE", "contact": "7696924527", "reg": "MP07ZH9129", "model": "VERNA", "advisor": "BALDEV", "ro": "R202616498", "rodate": "27/09/2026", "rostatus": "Billed & not Delivered", "promise": "10/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 12, "status": "17.Ready", "group": "17 Ready", "statusdate": "06/10/2026", "panel": "3", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 158, "customer": "NEERAJ PATHAK", "contact": "7566897303", "reg": "MP07AM2921", "model": "CRETA", "advisor": "PAWAN", "ro": "R202616491", "rodate": "27/09/2026", "rostatus": "#N/A", "promise": "12/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "3", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 159, "customer": "SAURABH AGRWAL", "contact": "9131093198", "reg": "MP07ZQ4920", "model": "EXTER", "advisor": "IMRAN", "ro": "R202616467", "rodate": "26/09/2026", "rostatus": "Billed & not Delivered", "promise": "15-10-2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 11, "status": "17.Ready", "group": "17 Ready", "statusdate": "07/10/2026", "panel": "2", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 160, "customer": "ANAGHA SHARMA", "contact": "7566609007", "reg": "MP07CK9437", "model": "alcazar", "advisor": "IMRAN", "ro": "R202616331", "rodate": "24/09/2026", "rostatus": "Open", "promise": "10/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 0, "status": "17.Ready", "group": "17 Ready", "statusdate": "18/10/2026", "panel": "", "inward": "23/09/2026", "age": 25, "bucket": "021 to 030"}, {"id": 161, "customer": "YOGENDRA SINGH BHADORIYA", "contact": "9425848008", "reg": "MP04CU8008", "model": "VERNA", "advisor": "BALDEV", "ro": "R202616271", "rodate": "23/09/2026", "rostatus": "Billed & not Delivered", "promise": "05/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 17, "status": "17.Ready", "group": "17 Ready", "statusdate": "01/10/2026", "panel": "", "inward": "23/09/2026", "age": 25, "bucket": "021 to 030"}, {"id": 162, "customer": "NAND KISHOR SHARMA FACEBOOK", "contact": "7710028071", "reg": "MH43BK7428", "model": "I-10", "advisor": "IMRAN", "ro": "R202616262", "rodate": "23/09/2026", "rostatus": "Closed", "promise": "20/10/2026", "insurance": "INDUS I", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "9", "inward": "21/09/2026", "age": 27, "bucket": "021 to 030"}, {"id": 163, "customer": "NAMRATA RAGHUWANSHI", "contact": "9977526116", "reg": "MP08CB2385", "model": "CRETA", "advisor": "BALDEV", "ro": "R202616188", "rodate": "22/09/2026", "rostatus": "#N/A", "promise": "20/10/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 4, "status": "17.Ready", "group": "17 Ready", "statusdate": "14/10/2026", "panel": "2", "inward": "20/09/2026", "age": 28, "bucket": "021 to 030"}, {"id": 164, "customer": "GYANENDRA SHARMA", "contact": "8839760495", "reg": "MP07AE7508", "model": "EXTER", "advisor": "VIKAS", "ro": "R202616174", "rodate": "22/09/2026", "rostatus": "Closed", "promise": "05/10/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 3, "status": "17.Ready", "group": "17 Ready", "statusdate": "15/10/2026", "panel": "4", "inward": "21/09/2026", "age": 27, "bucket": "021 to 030"}, {"id": 165, "customer": "VIVEK AGRAWAL", "contact": "7974949968", "reg": "MP07CG7975", "model": "VENUE", "advisor": "BALDEV", "ro": "R202616156", "rodate": "22/09/2026", "rostatus": "Billed & not Delivered", "promise": "05/10/2026", "insurance": "RELAINCE", "repair": "MEDIUM", "statusage": 15, "status": "17.Ready", "group": "17 Ready", "statusdate": "03/10/2026", "panel": "", "inward": "28/09/2026", "age": 20, "bucket": "011 to 020"}, {"id": 166, "customer": "9107", "contact": "7477213796", "reg": "MP07ZW2834", "model": "VERNA", "advisor": "GAURAV", "ro": "R202615962", "rodate": "19/09/2026", "rostatus": "Billed & not Delivered", "promise": "01/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 18, "status": "17.Ready", "group": "17 Ready", "statusdate": "30/09/2026", "panel": "1", "inward": "15/09/2026", "age": 33, "bucket": "031 to 040"}, {"id": 167, "customer": "VIKAS RAJPUT", "contact": "6261545113", "reg": "MP07ZT1731", "model": "VENUE", "advisor": "VIKAS", "ro": "R202615927", "rodate": "19/09/2026", "rostatus": "Closed", "promise": "19/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "17.Ready", "group": "17 Ready", "statusdate": "17/10/2026", "panel": "7", "inward": "15/09/2026", "age": 33, "bucket": "031 to 040"}, {"id": 168, "customer": "VIJAY KUMAR SINGH", "contact": "9425109771", "reg": "MP07CD4114", "model": "CRETA", "advisor": "IMRAN", "ro": "R202615645", "rodate": "15/09/2026", "rostatus": "Billed & not Delivered", "promise": "28/09/2026", "insurance": "CASH", "repair": "MEDIUM", "statusage": 18, "status": "17.Ready", "group": "17 Ready", "statusdate": "30/09/2026", "panel": "6", "inward": "15/09/2026", "age": 33, "bucket": "031 to 040"}, {"id": 169, "customer": "HARIMOHAN GURJAR", "contact": "9669100514", "reg": "MP07ZP3335", "model": "VENUE", "advisor": "MANOJ", "ro": "R202614513", "rodate": "10/05/2026", "rostatus": "Billed & not Delivered", "promise": "05/06/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 11, "status": "17.Ready", "group": "17 Ready", "statusdate": "07/10/2026", "panel": "6", "inward": "01/05/2026", "age": 170, "bucket": "161 to 170"}, {"id": 170, "customer": "ADIL SINGH GURJAR", "contact": "9009079009", "reg": "MP09WF0359", "model": "VERNA", "advisor": "GAURAV", "ro": "R202612121", "rodate": "20/07/2026", "rostatus": "#N/A", "promise": "15/09/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 18, "status": "17.Ready", "group": "17 Ready", "statusdate": "30/09/2026", "panel": "", "inward": "15/07/2026", "age": 95, "bucket": "091 to 100"}, {"id": 171, "customer": "RAJEEV PIPPAL", "contact": "8349099002", "reg": "MP06ZA0185", "model": "VENUE", "advisor": "VIKAS", "ro": "R202611708", "rodate": "13/07/2026", "rostatus": "Billed & not Delivered", "promise": "28/08/2026", "insurance": "CASH", "repair": "MEDIUM", "statusage": 40, "status": "17.Ready", "group": "17 Ready", "statusdate": "08/09/2026", "panel": "4", "inward": "18/03/2026", "age": 214, "bucket": "211 to 220"}, {"id": 172, "customer": "SUNITA BHADORIYA", "contact": "9303112955", "reg": "MP07CL5055", "model": "VERNA", "advisor": "BALDEV", "ro": "R202608987", "rodate": "25/05/2026", "rostatus": "#N/A", "promise": "04/08/2026", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 60, "status": "17.Ready", "group": "17 Ready", "statusdate": "19/08/2026", "panel": "6", "inward": "24/05/2026", "age": 147, "bucket": "141 to 150"}, {"id": 173, "customer": "NARSINGH", "contact": "9201239394, 6265901169", "reg": "MP30ZA0149", "model": "SANTRO", "advisor": "IRFAN", "ro": "R202607146", "rodate": "25/04/2026", "rostatus": "Billed & not Delivered", "promise": "22/05/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 139, "status": "17.Ready", "group": "17 Ready", "statusdate": "01/06/2026", "panel": "3", "inward": "22/04/2026", "age": 179, "bucket": "171 to 180"}, {"id": 174, "customer": "AKHILESH AWASTHI", "contact": "8602328060", "reg": "MP07ZL1073", "model": "AURA", "advisor": "SHAILESH", "ro": "R202512873", "rodate": "13/09/2025", "rostatus": "#N/A", "promise": "16/10/2025", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 343, "status": "17.Ready", "group": "17 Ready", "statusdate": "09/11/2025", "panel": "8", "inward": "13/09/2025", "age": 400, "bucket": "391 to 400"}, {"id": 175, "customer": "RISHAV CHANDRA JAIN", "contact": "9617483002", "reg": "MP33C9837", "model": "VENUE", "advisor": "IMRAN", "ro": "R202616113", "rodate": "21/09/2026", "rostatus": "Billed & not Delivered", "promise": "01/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 23, "status": "17.Ready  NO CHECK", "group": "17 Ready", "statusdate": "25/09/2026", "panel": "", "inward": "14/09/2026", "age": 34, "bucket": "031 to 040"}, {"id": 176, "customer": "SATENDRA SINGH", "contact": "9340629072", "reg": "MP07ZN3095", "model": "VERNA", "advisor": "ASHU", "ro": "R202615646", "rodate": "15/09/2026", "rostatus": "Billed & not Delivered", "promise": "19/09/2026", "insurance": "CASH", "repair": "MEDIUM", "statusage": 23, "status": "17.Ready  NO CHECK", "group": "17 Ready", "statusdate": "25/09/2026", "panel": "6", "inward": "15/09/2026", "age": 33, "bucket": "031 to 040"}, {"id": 177, "customer": "JATINDER SINGH UPPAL", "contact": "9009612531", "reg": "MP07CK8509", "model": "CRETA", "advisor": "IMRAN", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "10/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 22, "status": "18.Total Loss Process", "group": "18 Total Loss Process", "statusdate": "26/09/2026", "panel": "", "inward": "09/09/2026", "age": 39, "bucket": "031 to 040"}, {"id": 178, "customer": "BHUDEV SHARMA", "contact": "7771857904", "reg": "MP07ZP6202", "model": "VENUE", "advisor": "PAWAN", "ro": "R202616717", "rodate": "29/09/2026", "rostatus": "Open", "promise": "25/11/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 3, "status": "18.Total Loss Process", "group": "18 Total Loss Process", "statusdate": "15/10/2026", "panel": "", "inward": "28/09/2026", "age": 20, "bucket": "011 to 020"}, {"id": 179, "customer": "SAMAR RANJAN", "contact": "7893605118", "reg": "HP15A8118", "model": "CRETA", "advisor": "IMRAN", "ro": "R202614890", "rodate": "03/09/2026", "rostatus": "Open", "promise": "20/09/2026", "insurance": "TATA AIG", "repair": "MEDIUM", "statusage": 23, "status": "18.Total Loss Process", "group": "18 Total Loss Process", "statusdate": "25/09/2026", "panel": "", "inward": "30/08/2026", "age": 49, "bucket": "041 to 050"}, {"id": 180, "customer": "AMAR SINGH", "contact": "9407218478", "reg": "MP07ZF4080", "model": "AURA", "advisor": "IMRAN", "ro": "R202611542", "rodate": "10/07/2026", "rostatus": "#N/A", "promise": "25/09/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 86, "status": "18.Total Loss Process", "group": "18 Total Loss Process", "statusdate": "24/07/2026", "panel": "", "inward": "10/07/2026", "age": 100, "bucket": "091 to 100"}, {"id": 181, "customer": "KAMAL PATEL", "contact": "9575809999", "reg": "MP09DJ6434", "model": "alcazar", "advisor": "BALDEV", "ro": "R202615944", "rodate": "19/09/2026", "rostatus": "Open", "promise": "01/11/2026", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 14, "status": "18.Total Loss Process[INVESTIGATION]", "group": "18 Total Loss Process", "statusdate": "04/10/2026", "panel": "", "inward": "18/09/2026", "age": 30, "bucket": "021 to 030"}, {"id": 182, "customer": "ARVIND SINGH GURJAR", "contact": "7000433979", "reg": "HR51CC2537", "model": "SANTA", "advisor": "VIKAS", "ro": "R202614696", "rodate": "31/08/2026", "rostatus": "Open", "promise": "10/10/2026", "insurance": "ORIENTAL", "repair": "MEDIUM", "statusage": 38, "status": "18.Total Loss Process[INVESTIGATION]", "group": "18 Total Loss Process", "statusdate": "10/09/2026", "panel": "", "inward": "27/08/2026", "age": 52, "bucket": "051 to 060"}, {"id": 183, "customer": "DINESH KUMAR SHARMA", "contact": "9893098406", "reg": "MP07ZD7668", "model": "VENUE", "advisor": "IMRAN", "ro": "R202610162", "rodate": "15/06/2026", "rostatus": "#N/A", "promise": "30/07/2026", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 43, "status": "18.Total Loss Process[INVESTIGATION]", "group": "18 Total Loss Process", "statusdate": "05/09/2026", "panel": "", "inward": "04/06/2026", "age": 136, "bucket": "131 to 140"}, {"id": 184, "customer": "GUDDI DEVI", "contact": "9826473776", "reg": "MP06CB0984", "model": "CRETA", "advisor": "PAWAN", "ro": "R202614154", "rodate": "22/08/2026", "rostatus": "#N/A", "promise": "30/12/2026", "insurance": "ORIENTAL NON", "repair": "MEDIUM", "statusage": 40, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "08/09/2026", "panel": "", "inward": "19/08/2026", "age": 60, "bucket": "051 to 060"}, {"id": 185, "customer": "RAGHVENDRA SONI", "contact": "7000367611", "reg": "MP07AH8316", "model": "AURA", "advisor": "GAURAV", "ro": "R202612098", "rodate": "19/07/2026", "rostatus": "#N/A", "promise": "27/03/1900", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 19, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "29/09/2026", "panel": "", "inward": "15/07/2026", "age": 95, "bucket": "091 to 100"}, {"id": 186, "customer": "GOVIND SAHU", "contact": "9893047110", "reg": "MP04CX2302", "model": "I-20", "advisor": "IRFAN", "ro": "R202609499", "rodate": "04/06/2026", "rostatus": "#N/A", "promise": "30/06/2026", "insurance": "GCI", "repair": "MEDIUM", "statusage": 41, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "07/09/2026", "panel": "", "inward": "01/06/2026", "age": 139, "bucket": "131 to 140"}, {"id": 187, "customer": "RAJU SEN", "contact": "7440752636", "reg": "MP07AG3544", "model": "AURA", "advisor": "PAWAN", "ro": "R202517825", "rodate": "12/12/2025", "rostatus": "#N/A", "promise": "10/03/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 134, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "06/06/2026", "panel": "", "inward": "10/12/2025", "age": 312, "bucket": "311 to 320"}, {"id": 188, "customer": "SADHU SINGH", "contact": "9826222549", "reg": "MP07CH9135", "model": "CRETA", "advisor": "SHIVAM", "ro": "R202400271", "rodate": "06/01/2024", "rostatus": "#N/A", "promise": "06/02/2024", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 899, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "02/05/2024", "panel": "", "inward": "06/01/2024", "age": 1016, "bucket": "1011 to 1020"}, {"id": 189, "customer": "AMIT KUSHWAH", "contact": "8982873354", "reg": "MP07ZG7882", "model": "I-10", "advisor": "NIKETA", "ro": "R202317284", "rodate": "19/10/2023", "rostatus": "#N/A", "promise": "25/11/2023", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 1058, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "25/11/2023", "panel": "", "inward": "18/10/2023", "age": 1096, "bucket": "1091 to 1100"}, {"id": 190, "customer": "RAVINDRA SINGH", "contact": "7400704672", "reg": "MP07CG5911", "model": "SANTRO", "advisor": "ATUL .", "ro": "R202110860", "rodate": "09/08/2021", "rostatus": "#N/A", "promise": "31-11-2021", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 1896, "status": "19.TOTAL LOSS", "group": "19 Total Loss", "statusdate": "09/08/2021", "panel": "", "inward": "09/08/2021", "age": 1896, "bucket": "1891 to 1900"}, {"id": 191, "customer": "PAVAN SHARMA", "contact": "8871983546", "reg": "MP06ZC4617", "model": "AURA", "advisor": "VIKAS", "ro": "R202604650", "rodate": "17/03/2026", "rostatus": "#N/A", "promise": "25/04/2026", "insurance": "SBI GENERAL", "repair": "MEDIUM", "statusage": 134, "status": "19.TOTAL LOSS [No Claim]", "group": "19 Total Loss", "statusdate": "06/06/2026", "panel": "", "inward": "16/03/2026", "age": 216, "bucket": "211 to 220"}, {"id": 192, "customer": "ANUJ SHARMA", "contact": "9977585810", "reg": "MP30ZD8431", "model": "VENUE", "advisor": "PAWAN", "ro": "R202511558", "rodate": "17/08/2025", "rostatus": "#N/A", "promise": "04/09/2025", "insurance": "NEW INDIA", "repair": "MEDIUM", "statusage": 250, "status": "19.TOTAL LOSS [No Claim]", "group": "19 Total Loss", "statusdate": "10/02/2026", "panel": "", "inward": "17/08/2025", "age": 427, "bucket": "421 to 430"}, {"id": 193, "customer": "ANISH KUMAR SHARMA", "contact": "9926965034", "reg": "MP07ZL5977", "model": "AURA", "advisor": "PRAVESH", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "25/02/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 236, "status": "20.NO CLAIM", "group": "20 No Claim", "statusdate": "24/02/2026", "panel": "", "inward": "05/02/2026", "age": 255, "bucket": "251 to 260"}, {"id": 194, "customer": "HARBHAJAN TOMAR", "contact": "8516092033", "reg": "MP07CH8433", "model": "VENUE", "advisor": "PRAVESH", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 207, "status": "20.NO CLAIM", "group": "20 No Claim", "statusdate": "25/03/2026", "panel": "", "inward": "08/03/2026", "age": 224, "bucket": "221 to 230"}, {"id": 195, "customer": "JANDEL SINGH", "contact": "7000781739", "reg": "MP06ZL3592", "model": "VENUE", "advisor": "VIKAS", "ro": "#N/A", "rodate": "#N/A", "rostatus": "#N/A", "promise": "19/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "20.NO CLAIM", "group": "20 No Claim", "statusdate": "16/10/2026", "panel": "", "inward": "14/10/2026", "age": 4, "bucket": "001 to 010"}, {"id": 196, "customer": "ANJANI MAA CONST.COMPANY", "contact": "7987623056", "reg": "MP07CK4560", "model": "CRETA", "advisor": "PAWAN", "ro": "R202617405", "rodate": "10/10/2026", "rostatus": "Open", "promise": "23/10/2026", "insurance": "IFFCO TOKIO", "repair": "MEDIUM", "statusage": 2, "status": "20.NO CLAIM", "group": "20 No Claim", "statusdate": "16/10/2026", "panel": "", "inward": "09/10/2026", "age": 9, "bucket": "001 to 010"}, {"id": 197, "customer": "RAJESH SINGH", "contact": "7354573479", "reg": "MP07ZC2620", "model": "I-20", "advisor": "VIKAS", "ro": "R202616703", "rodate": "29/09/2026", "rostatus": "Open", "promise": "", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 5, "status": "20.NO CLAIM", "group": "20 No Claim", "statusdate": "13/10/2026", "panel": "", "inward": "02/09/2026", "age": 46, "bucket": "041 to 050"}, {"id": 198, "customer": "SATYAVEER", "contact": "7803070601", "reg": "MP30ZH6919", "model": "EXTER", "advisor": "BALDEV", "ro": "R202616585", "rodate": "28/09/2026", "rostatus": "Open", "promise": "20/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "NO CLAIM", "group": "20 No Claim", "statusdate": "17/10/2026", "panel": "", "inward": "26/09/2026", "age": 22, "bucket": "021 to 030"}, {"id": 199, "customer": "PRAMOD SINGH KUSHWAH", "contact": "9111838332", "reg": "MP07CK1650", "model": "I -20", "advisor": "IMRAN", "ro": "R202616559", "rodate": "28/09/2026", "rostatus": "Open", "promise": "30/10/2026", "insurance": "ICICI LOMBARD", "repair": "MEDIUM", "statusage": 1, "status": "NO CLAIM", "group": "20 No Claim", "statusdate": "17/10/2026", "panel": "", "inward": "24/09/2026", "age": 24, "bucket": "021 to 030"}];
+let filtered = [...RAW_DATA];
+let curPage = 1;
+let pageSize = 25;
+let curPill = 'ALL';
+let charts = {};
+
+Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+Chart.defaults.color = '#5a4a3a';
+Chart.defaults.borderColor = '#f0d9b8';
+
+function shadeHex(hex, p){
+    hex = String(hex||'#888').replace('#','');
+    if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+    let n = parseInt(hex, 16);
+    if(!isFinite(n)) return hex;
+    let r = Math.max(0, Math.min(255, Math.round(((n>>16)&255)*p)));
+    let g = Math.max(0, Math.min(255, Math.round(((n>>8)&255)*p)));
+    let b = Math.max(0, Math.min(255, Math.round((n&255)*p)));
+    return 'rgb('+r+','+g+','+b+')';
+}
+function arcProps(el){
+    return el.getProps(['x','y','startAngle','endAngle','innerRadius','outerRadius'], true);
+}
+Chart.register({
+    id: 'lite3d',
+    beforeDatasetsDraw(chart){
+        if(chart.config.type !== 'doughnut') return;
+        let ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+        if(!meta || !meta.data.length) return;
+        let ds = chart.data.datasets[0];
+        for(let layer=10; layer>=1; layer--){
+            ctx.save();
+            ctx.translate(0, layer);
+            meta.data.forEach((arc,i)=>{
+                let p = arcProps(arc);
+                let col = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[i] : ds.backgroundColor;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.outerRadius, p.startAngle, p.endAngle);
+                ctx.arc(p.x, p.y, p.innerRadius, p.endAngle, p.startAngle, true);
+                ctx.closePath();
+                ctx.fillStyle = shadeHex(col, 0.62);
+                ctx.fill();
+            });
+            ctx.restore();
+        }
+    },
+    afterDatasetsDraw(chart){
+        if(chart.config.type !== 'bar') return;
+        let ctx = chart.ctx, D = 8, horiz = chart.options.indexAxis === 'y';
+        chart.data.datasets.forEach((ds, di)=>{
+            let meta = chart.getDatasetMeta(di);
+            if(!meta || meta.hidden) return;
+            meta.data.forEach((el, i)=>{
+                let col = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[i] : ds.backgroundColor;
+                if(!col) return;
+                ctx.save();
+                if(horiz){
+                    let x = el.x, y = el.y, base = el.base, h = el.height;
+                    let top = y - h/2, bot = y + h/2;
+                    ctx.fillStyle = shadeHex(col, 1.16);
+                    ctx.beginPath();
+                    ctx.moveTo(base, top); ctx.lineTo(base+D, top-D); ctx.lineTo(x+D, top-D); ctx.lineTo(x, top); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = shadeHex(col, 0.7);
+                    ctx.beginPath();
+                    ctx.moveTo(x, top); ctx.lineTo(x+D, top-D); ctx.lineTo(x+D, bot-D); ctx.lineTo(x, bot); ctx.closePath(); ctx.fill();
+                } else {
+                    let x = el.x, y = el.y, base = el.base, w = el.width;
+                    let left = x - w/2, right = x + w/2;
+                    ctx.fillStyle = shadeHex(col, 1.16);
+                    ctx.beginPath();
+                    ctx.moveTo(left, y); ctx.lineTo(left+D, y-D); ctx.lineTo(right+D, y-D); ctx.lineTo(right, y); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = shadeHex(col, 0.7);
+                    ctx.beginPath();
+                    ctx.moveTo(right, y); ctx.lineTo(right+D, y-D); ctx.lineTo(right+D, base-D); ctx.lineTo(right, base); ctx.closePath(); ctx.fill();
+                }
+                ctx.restore();
+            });
+        });
+    }
+});
+
+function badgeClass(st){
+    let s = String(st||'');
+    if(s.startsWith('17')) return 'badge-ready';
+    if(s.startsWith('09')) return 'badge-parts';
+    if(/^(11|12|13|14|15|16)/.test(s)) return 'badge-work';
+    if(/^(00|01|02|03|04|05|07|08)/.test(s)) return 'badge-survey';
+    return 'badge-other';
+}
+
+function ageBadge(a){
+    let n = Number(a)||0;
+    if(n>=21) return `<span class="badge badge-age-danger">${n}d</span>`;
+    if(n>=14) return `<span class="badge badge-age-warning">${n}d</span>`;
+    return `<span class="badge badge-age-ok">${n}d</span>`;
+}
+
+function initFilters(){
+    let advs = [...new Set(RAW_DATA.map(d=>d.advisor).filter(Boolean))].sort();
+    let inss = [...new Set(RAW_DATA.map(d=>d.insurance).filter(Boolean))].sort();
+    let aEl = document.getElementById('advFilter');
+    let iEl = document.getElementById('insFilter');
+    let selA = aEl.value; let selI = iEl.value;
+    aEl.innerHTML = '<option value="">All Advisors</option>' + advs.map(a=>`<option value="${a}">${a}</option>`).join('');
+    iEl.innerHTML = '<option value="">All Insurance</option>' + inss.map(i=>`<option value="${i}">${i}</option>`).join('');
+    aEl.value = selA; iEl.value = selI;
+}
+
+function renderKPIs(){
+    let tot = RAW_DATA.length;
+    let rdy = RAW_DATA.filter(d=>String(d.status).startsWith('17')).length;
+    let wrk = RAW_DATA.filter(d=>/^(11|12|13|14|15|16)/.test(String(d.status))).length;
+    let prt = RAW_DATA.filter(d=>String(d.status).startsWith('09')).length;
+    let srv = RAW_DATA.filter(d=>/^(01|02|03|04|05)/.test(String(d.status))).length;
+    let age = RAW_DATA.filter(d=>(Number(d.age)||0)>=21).length;
+
+    document.getElementById('kpiTotal').textContent = tot;
+    document.getElementById('kpiReady').textContent = rdy;
+    document.getElementById('kpiWork').textContent = wrk;
+    document.getElementById('kpiParts').textContent = prt;
+    document.getElementById('kpiSurvey').textContent = srv;
+    document.getElementById('kpiAgeing').textContent = age;
+
+    document.getElementById('pillAll').textContent = tot;
+    document.getElementById('pillParts').textContent = prt;
+    document.getElementById('pillSurvey').textContent = srv;
+    document.getElementById('pillWork').textContent = wrk;
+    document.getElementById('pillReady').textContent = rdy;
+    document.getElementById('pillAge').textContent = age;
+}
+
+function renderGraphicalCharts(){
+    let stageCounts = {'Ready':0, 'Parts Wait':0, 'Fitting':0, 'Final Inspect':0, 'Survey/Appr':0, 'Denting/Paint':0, 'Investigation':0};
+    RAW_DATA.forEach(d=>{
+        let s = String(d.status||'');
+        if(s.startsWith('17')) stageCounts['Ready']++;
+        else if(s.startsWith('09')) stageCounts['Parts Wait']++;
+        else if(s.startsWith('15')) stageCounts['Fitting']++;
+        else if(s.startsWith('16')) stageCounts['Final Inspect']++;
+        else if(/^(01|02|03|04|05)/.test(s)) stageCounts['Survey/Appr']++;
+        else if(/^(13|14)/.test(s)) stageCounts['Denting/Paint']++;
+        else if(/^(06|18|19|20)/.test(s)) stageCounts['Investigation']++;
+    });
+
+    let sLabels = Object.keys(stageCounts);
+    let sVals = Object.values(stageCounts);
+    let sColors = ['#2db57a', '#ff5a7a', '#3d8bfd', '#8b6cff', '#f5a524', '#ff7a3d', '#7a8a99'];
+
+    if(charts.stage){
+        charts.stage.data.datasets[0].data = sVals;
+        charts.stage.update();
+    } else {
+        let ctx = document.getElementById('stageChart').getContext('2d');
+        charts.stage = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: sLabels,
+                datasets: [{ data: sVals, backgroundColor: sColors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 8 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: '600' }, padding: 8 } }
+                },
+                cutout: '58%'
+            }
+        });
+    }
+
+    let advMap = {};
+    RAW_DATA.forEach(d=>{ let a = d.advisor||'Other'; advMap[a] = (advMap[a]||0)+1; });
+    let sAdvs = Object.entries(advMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+    let aLabels = sAdvs.map(x=>x[0]);
+    let aVals = sAdvs.map(x=>x[1]);
+    document.getElementById('advCountHint').textContent = Object.keys(advMap).length + ' Advisors';
+
+    if(charts.advisor){
+        charts.advisor.data.labels = aLabels;
+        charts.advisor.data.datasets[0].data = aVals;
+        charts.advisor.update();
+    } else {
+        let ctx = document.getElementById('advisorChart').getContext('2d');
+        charts.advisor = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: aLabels,
+                datasets: [{
+                    label: 'Vehicles',
+                    data: aVals,
+                    backgroundColor: '#ff5a7a',
+                    hoverBackgroundColor: '#f5a524',
+                    borderRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#ffe8cc' } },
+                    x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
+                }
+            }
+        });
+    }
+
+    let bMap = {'0-7d':0, '8-14d':0, '15-20d':0, '21-30d':0, '31-60d':0, '60d+':0};
+    RAW_DATA.forEach(d=>{
+        let a = Number(d.age)||0;
+        if(a<=7) bMap['0-7d']++;
+        else if(a<=14) bMap['8-14d']++;
+        else if(a<=20) bMap['15-20d']++;
+        else if(a<=30) bMap['21-30d']++;
+        else if(a<=60) bMap['31-60d']++;
+        else bMap['60d+']++;
+    });
+    let bLabels = Object.keys(bMap);
+    let bVals = Object.values(bMap);
+    let bColors = ['#2db57a', '#7ad0a0', '#f5a524', '#ff7a3d', '#ff5a7a', '#e23d3d'];
+
+    if(charts.ageing){
+        charts.ageing.data.datasets[0].data = bVals;
+        charts.ageing.update();
+    } else {
+        let ctx = document.getElementById('ageingChart').getContext('2d');
+        charts.ageing = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: bLabels,
+                datasets: [{
+                    label: 'Vehicles',
+                    data: bVals,
+                    backgroundColor: bColors,
+                    borderRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#ffe8cc' } },
+                    x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
+                }
+            }
+        });
+    }
+
+    let insMap = {};
+    RAW_DATA.forEach(d=>{ let ins = d.insurance||'Other'; insMap[ins] = (insMap[ins]||0)+1; });
+    let sIns = Object.entries(insMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    let iLabels = sIns.map(x=>x[0].length>18?x[0].slice(0,18)+'...':x[0]);
+    let iVals = sIns.map(x=>x[1]);
+
+    if(charts.ins){
+        charts.ins.data.labels = iLabels;
+        charts.ins.data.datasets[0].data = iVals;
+        charts.ins.update();
+    } else {
+        let ctx = document.getElementById('insChart').getContext('2d');
+        charts.ins = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: iLabels,
+                datasets: [{
+                    label: 'Vehicles',
+                    data: iVals,
+                    backgroundColor: '#3d8bfd',
+                    hoverBackgroundColor: '#8b6cff',
+                    borderRadius: 12
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: '#ffe8cc' } },
+                    y: { grid: { display: false }, ticks: { font: { weight: '700', size: 10 } } }
+                }
+            }
+        });
+    }
+}
+
+function applyFilters(){
+    let q = (document.getElementById('searchInput').value||'').toLowerCase().trim();
+    let adv = document.getElementById('advFilter').value;
+    let ins = document.getElementById('insFilter').value;
+
+    filtered = RAW_DATA.filter(d=>{
+        if(adv && d.advisor !== adv) return false;
+        if(ins && d.insurance !== ins) return false;
+        if(curPill === 'PARTS' && !String(d.status).startsWith('09')) return false;
+        if(curPill === 'SURVEY' && !/^(01|02|03|04|05)/.test(String(d.status))) return false;
+        if(curPill === 'WORK' && !/^(11|12|13|14|15|16)/.test(String(d.status))) return false;
+        if(curPill === 'READY' && !String(d.status).startsWith('17')) return false;
+        if(curPill === 'AGE21' && (Number(d.age)||0)<21) return false;
+        if(q){
+            let text = [d.reg, d.customer, d.model, d.advisor, d.insurance, d.ro, d.status].join(' ').toLowerCase();
+            if(!text.includes(q)) return false;
+        }
+        return true;
+    });
+
+    curPage = 1;
+    renderTable();
+}
+
+function handleSearch(){ applyFilters(); }
+
+function setPill(type, el){
+    curPill = type;
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+}
+
+function resetFilters(){
+    document.getElementById('searchInput').value = '';
+    document.getElementById('advFilter').value = '';
+    document.getElementById('insFilter').value = '';
+    curPill = 'ALL';
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+    document.querySelector('.pill').classList.add('active');
+    applyFilters();
+}
+
+function changePageSize(){
+    pageSize = Number(document.getElementById('pageLimit').value);
+    curPage = 1;
+    renderTable();
+}
+
+function renderTable(){
+    let total = filtered.length;
+    let start = (curPage-1)*pageSize;
+    let pageItems = filtered.slice(start, start + pageSize);
+    let cards = document.getElementById('mobileCards');
+
+    document.getElementById('rowCountHint').textContent = total + ' Vehicles Found';
+    let tbody = document.getElementById('tableBody');
+    if(total === 0){
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-muted)">No matching vehicles found</td></tr>';
+        cards.innerHTML = '<div class="vcard" style="text-align:center;color:var(--text-muted)">No matching vehicles found</div>';
+        document.getElementById('pageInfo').textContent = 'Showing 0 of 0';
+        document.getElementById('pageBtns').innerHTML = '';
+        return;
+    }
+
+    tbody.innerHTML = pageItems.map((d,idx)=>{
+        return `<tr>
+<td>${start + idx + 1}</td>
+<td><strong style="color:var(--rose-900)">${d.reg||'--'}</strong></td>
+<td>${d.customer||'--'}</td>
+<td>${d.model||'--'}</td>
+<td><span style="font-weight:700;color:var(--text-sub)">${d.advisor||'--'}</span></td>
+<td><span class="badge ${badgeClass(d.status)}">${d.status||'--'}</span></td>
+<td>${d.statusage}d</td>
+<td>${ageBadge(d.age)}</td>
+<td>${d.insurance||'--'}</td>
+<td>${d.ro||'--'}</td>
+<td>${d.promise||'--'}</td>
+</tr>`;
+    }).join('');
+
+    cards.innerHTML = pageItems.map((d,idx)=>{
+        return `<article class="vcard">
+<div class="vcard-top">
+<div>
+<div class="vcard-reg">${d.reg||'--'}</div>
+<div class="vcard-name">${d.customer||'--'} · ${d.model||'--'}</div>
+</div>
+${ageBadge(d.age)}
+</div>
+<div class="vcard-grid">
+<div class="vcard-item vcard-status"><span>Status</span><b><span class="badge ${badgeClass(d.status)}">${d.status||'--'}</span></b></div>
+<div class="vcard-item"><span>Advisor</span><b>${d.advisor||'--'}</b></div>
+<div class="vcard-item"><span>Insurance</span><b>${d.insurance||'--'}</b></div>
+<div class="vcard-item"><span>RO No.</span><b>${d.ro||'--'}</b></div>
+<div class="vcard-item"><span>Promise</span><b>${d.promise||'--'}</b></div>
+</div>
+</article>`;
+    }).join('');
+
+    let end = Math.min(start + pageSize, total);
+    document.getElementById('pageInfo').textContent = `Showing ${start + 1} to ${end} of ${total}`;
+
+    let totalPages = Math.ceil(total/pageSize);
+    let btns = '';
+    if(totalPages > 1){
+        if(curPage > 1) btns += `<button class="page-btn" onclick="gotoPage(${curPage-1})">Prev</button>`;
+        for(let p=1; p<=Math.min(totalPages,7); p++){
+            btns += `<button class="page-btn ${p===curPage?'active':''}" onclick="gotoPage(${p})">${p}</button>`;
+        }
+        if(totalPages > 7) btns += `<span style="padding:4px">...</span><button class="page-btn" onclick="gotoPage(${totalPages})">${totalPages}</button>`;
+        if(curPage < totalPages) btns += `<button class="page-btn" onclick="gotoPage(${curPage+1})">Next</button>`;
+    }
+    document.getElementById('pageBtns').innerHTML = btns;
+}
+
+function gotoPage(p){ curPage = p; renderTable(); }
+
+let liveSource = null;
+let liveSheetUrl = '';
+let liveFileHandle = null;
+let livePollTimer = null;
+let lastLiveHash = '';
+
+function toggleGSheet(){
+    document.getElementById('gsheetBox').classList.toggle('open');
+}
+
+function setSync(text){
+    document.getElementById('syncText').textContent = text;
+}
+
+function cell(r, i){
+    let v = r[i];
+    if(v === null || v === undefined) return '';
+    if(v instanceof Date) return v.toLocaleDateString('en-GB');
+    return String(v).trim();
+}
+
+function numCell(r, i){
+    let n = parseFloat(cell(r,i).replace(/[^0-9.-]/g,''));
+    return isFinite(n) ? n : 0;
+}
+
+function normHead(h){
+    return String(h||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+}
+
+function findCol(heads, names){
+    for(let n of names){
+        let i = heads.findIndex(h => h === n);
+        if(i >= 0) return i;
+    }
+    for(let n of names){
+        let i = heads.findIndex(h => n.length >= 5 && h.includes(n));
+        if(i >= 0) return i;
+    }
+    return -1;
+}
+
+function rowToRecord(r, i, map){
+    let get = (key, fallback)=> map[key] >= 0 ? cell(r, map[key]) : cell(r, fallback);
+    let getN = (key, fallback)=> map[key] >= 0 ? numCell(r, map[key]) : numCell(r, fallback);
+    let st = get('status', 15);
+    if(!st || st.toLowerCase() === 'none') return null;
+    let customer = get('customer', 1);
+    let reg = get('reg', 3);
+    if(!customer && !reg) return null;
+    return {
+        id: i,
+        customer,
+        contact: get('contact', 2),
+        reg,
+        model: get('model', 4),
+        advisor: get('advisor', 5),
+        ro: get('ro', 6) || '#N/A',
+        rodate: get('rodate', 7),
+        rostatus: get('rostatus', 9) || '#N/A',
+        promise: get('promise', 10),
+        insurance: get('insurance', 12) || 'Not Specified',
+        repair: get('repair', 13) || 'MEDIUM',
+        statusage: getN('statusage', 14),
+        status: st,
+        group: st.slice(0,25),
+        statusdate: get('statusdate', 16),
+        panel: get('panel', 17),
+        inward: get('inward', 18),
+        age: getN('age', 19),
+        bucket: get('bucket', 20)
+    };
+}
+
+function detectMap(rows){
+    let blank = {customer:-1,contact:-1,reg:-1,model:-1,advisor:-1,ro:-1,rodate:-1,rostatus:-1,promise:-1,insurance:-1,repair:-1,statusage:-1,status:-1,statusdate:-1,panel:-1,inward:-1,age:-1,bucket:-1};
+    for(let i=0;i<Math.min(rows.length,6);i++){
+        let heads = (rows[i]||[]).map(normHead);
+        let joined = heads.join(' ');
+        if(!/(reg|customer|status|advisor)/.test(joined)) continue;
+        return {
+            headerRow: i,
+            map: {
+                customer: findCol(heads, ['customer name','customer','cust name']),
+                contact: findCol(heads, ['contact','mobile','phone']),
+                reg: findCol(heads, ['reg no','reg. no','registration','vehicle no','veh no','reg']),
+                model: findCol(heads, ['model']),
+                advisor: findCol(heads, ['advisor','sa name','service advisor']),
+                ro: findCol(heads, ['ro no','ro number','repair order']),
+                rodate: findCol(heads, ['ro date']),
+                rostatus: findCol(heads, ['ro status']),
+                promise: findCol(heads, ['promise date','promised']),
+                insurance: findCol(heads, ['insurance company','insurance','insurer']),
+                repair: findCol(heads, ['repair type','repair']),
+                statusage: findCol(heads, ['status age','status ageing']),
+                status: findCol(heads, ['current status','latest status']),
+                statusdate: findCol(heads, ['status date']),
+                panel: findCol(heads, ['panel']),
+                inward: findCol(heads, ['inward date','inward']),
+                age: findCol(heads, ['total age','ageing','aging']),
+                bucket: findCol(heads, ['bucket'])
+            }
+        };
+    }
+    return {headerRow: 1, map: blank};
+}
+
+function rowsToData(rows){
+    if(!rows || rows.length < 2) return [];
+    let det = detectMap(rows);
+    let data = [];
+    for(let i=det.headerRow+1; i<rows.length; i++){
+        let rec = rowToRecord(rows[i]||[], i, det.map);
+        if(rec) data.push(rec);
+    }
+    return data;
+}
+
+function parseCSV(text){
+    let lines = text.split(/\r?\n/).filter(l=>l.trim());
+    let rows = lines.map(line=>{
+        let res = []; let inQuote = false; let cur = '';
+        for(let i=0; i<line.length; i++){
+            let c = line[i];
+            if(c === '"') inQuote = !inQuote;
+            else if(c === ',' && !inQuote){ res.push(cur.trim()); cur = ''; }
+            else cur += c;
+        }
+        res.push(cur.trim());
+        return res;
+    });
+    return rowsToData(rows);
+}
+
+function applyLiveData(ndata, label, closePanel){
+    if(!ndata || !ndata.length) return false;
+    let hash = JSON.stringify(ndata);
+    if(hash === lastLiveHash) return true;
+    lastLiveHash = hash;
+    RAW_DATA = ndata;
+    setSync(label + ' (' + ndata.length + ')');
+    document.getElementById('kpiExcelFile').textContent = label;
+    initFilters();
+    renderKPIs();
+    renderGraphicalCharts();
+    applyFilters();
+    if(closePanel) document.getElementById('gsheetBox').classList.remove('open');
+    return true;
+}
+
+function startLivePoll(fn, ms){
+    if(livePollTimer) clearInterval(livePollTimer);
+    livePollTimer = setInterval(fn, ms);
+}
+
+function pickExcelFile(){
+    if(window.showOpenFilePicker){
+        window.showOpenFilePicker({
+            types: [{ description: 'Excel', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'], 'application/vnd.ms-excel': ['.xls'], 'text/csv': ['.csv'] } }]
+        }).then(async handles => {
+            liveFileHandle = handles[0];
+            await loadFromHandle(true);
+            liveSource = 'excel';
+            startLivePoll(()=>loadFromHandle(false), 4000);
+        }).catch(()=> document.getElementById('excelFile').click());
+    } else {
+        document.getElementById('excelFile').click();
+    }
+}
+
+function loadExcelFile(file){
+    if(!file) return;
+    setSync('Reading Excel...');
+    let reader = new FileReader();
+    reader.onload = e => {
+        try {
+            let ndata = parseWorkbook(e.target.result, file.name);
+            liveSource = 'excel-upload';
+            liveFileHandle = null;
+            if(!applyLiveData(ndata, file.name, true)) alert('No vehicle rows found. Check the DVPR sheet and status column.');
+        } catch(err){
+            alert('Could not read Excel: ' + err.message);
+            setSync('Excel Error');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+async function loadFromHandle(closePanel){
+    if(!liveFileHandle) return;
+    try {
+        let file = await liveFileHandle.getFile();
+        let buf = await file.arrayBuffer();
+        let ndata = parseWorkbook(buf, file.name);
+        applyLiveData(ndata, 'Live Excel · ' + file.name, closePanel);
+    } catch(err){
+        setSync('Excel locked / error');
+    }
+}
+
+function parseWorkbook(buf, fname){
+    if(typeof XLSX === 'undefined') throw new Error('Excel library failed to load');
+    let wb = XLSX.read(buf, {type:'array', cellDates:true});
+    let sheetName = wb.SheetNames.find(n => /dvpr/i.test(n)) || wb.SheetNames[0];
+    let rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1, raw:false, defval:''});
+    let data = rowsToData(rows);
+    if(!data.length) data = parseCSV(XLSX.utils.sheet_to_csv(wb.Sheets[sheetName]));
+    return data;
+}
+
+function toSheetCsvUrls(url){
+    url = url.trim();
+    let urls = [url];
+    let id = (url.match(/\/spreadsheets\/d\/(?:e\/)?([a-zA-Z0-9-_]+)/) || [])[1];
+    let gid = (url.match(/[?#&]gid=([0-9]+)/) || [])[1] || '0';
+    if(id){
+        urls.push('https://docs.google.com/spreadsheets/d/' + id + '/gviz/tq?tqx=out:csv&gid=' + gid);
+        urls.push('https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid);
+        urls.push('https://docs.google.com/spreadsheets/d/' + id + '/pub?output=csv&gid=' + gid);
+    }
+    return [...new Set(urls)];
+}
+
+async function fetchText(url){
+    try {
+        let r = await fetch(url, {cache:'no-store'});
+        if(r.ok) return await r.text();
+    } catch(e){}
+    let r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), {cache:'no-store'});
+    if(!r2.ok) throw new Error('Could not open the sheet');
+    return await r2.text();
+}
+
+async function loadGoogleSheet(url, closePanel){
+    setSync('Fetching Google Sheet...');
+    let lastErr = null;
+    for(const u of toSheetCsvUrls(url)){
+        try {
+            let text = await fetchText(u);
+            let ndata = parseCSV(text);
+            if(ndata.length){
+                liveSource = 'gsheet';
+                liveSheetUrl = url;
+                localStorage.setItem('dvpr_sheet_url', url);
+                applyLiveData(ndata, 'Google Sheet Live', closePanel);
+                startLivePoll(()=>loadGoogleSheet(liveSheetUrl, false), 8000);
+                return true;
+            }
+        } catch(e){ lastErr = e; }
+    }
+    throw lastErr || new Error('No data found in the sheet');
+}
+
+function connectGSheet(){
+    let url = document.getElementById('gsheetUrl').value.trim();
+    if(!url){ alert('Paste a Google Sheet link'); return; }
+    loadGoogleSheet(url, true).catch(e=>{
+        alert('Could not connect. Share the sheet as Anyone with the link.\n' + e.message);
+        setSync('Sheet Error');
+    });
+}
+
+function disconnectLive(){
+    liveSource = null;
+    liveSheetUrl = '';
+    liveFileHandle = null;
+    lastLiveHash = '';
+    if(livePollTimer) clearInterval(livePollTimer);
+    livePollTimer = null;
+    localStorage.removeItem('dvpr_sheet_url');
+    setSync('Disconnected · snapshot');
+}
+
+function pollLocalServer(){
+    if(liveSource) return;
+    fetch('/api/data')
+    .then(r=>r.json())
+    .then(res=>{
+        if(res && res.data && res.data.length > 0){
+            applyLiveData(res.data, 'Live Excel Sync', false);
+        }
+    })
+    .catch(()=>{});
+}
+
+function triggerRefresh(){
+    if(liveSource === 'gsheet' && liveSheetUrl) loadGoogleSheet(liveSheetUrl, false).catch(()=>{});
+    else if(liveFileHandle) loadFromHandle(false);
+    else if(location.hostname === 'localhost' || location.hostname === '127.0.0.1') pollLocalServer();
+    else location.reload();
+}
+
+function pollRemoteVersion(){
+    if(liveSource) return;
+    fetch('version.json?t=' + Date.now())
+    .then(r=>r.ok ? r.json() : null)
+    .then(v=>{
+        if(!v || !v.ts) return;
+        if(!window.DASH_TS){ window.DASH_TS = v.ts; return; }
+        if(v.ts !== window.DASH_TS){
+            window.DASH_TS = v.ts;
+            location.replace((location.pathname || '/index.html') + '?v=' + v.ts);
+        }
+    })
+    .catch(()=>{});
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+    initFilters();
+    renderKPIs();
+    if(typeof Chart !== 'undefined') renderGraphicalCharts();
+    applyFilters();
+    let drop = document.getElementById('excelDrop');
+    drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', ()=> drop.classList.remove('drag'));
+    drop.addEventListener('drop', e=>{
+        e.preventDefault();
+        drop.classList.remove('drag');
+        if(e.dataTransfer.files[0]) loadExcelFile(e.dataTransfer.files[0]);
+    });
+    let saved = localStorage.getItem('dvpr_sheet_url');
+    if(saved){
+        document.getElementById('gsheetUrl').value = saved;
+        loadGoogleSheet(saved, false).catch(()=>{});
+    }
+    let local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if(local) setInterval(pollLocalServer, 3000);
+    else if(location.protocol.startsWith('http')) setInterval(pollRemoteVersion, 15000);
+});
+</script>
+</body>
+</html>
