@@ -54,12 +54,12 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:radial-grad
 .stat-val{font-size:38px;font-weight:800;color:#2b2118;line-height:1;margin-bottom:6px;letter-spacing:-.03em}
 .stat-hint{font-size:13px;color:var(--text-muted);font-weight:600}
 .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin-bottom:16px}
-.chart-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:16px;box-shadow:var(--shadow),inset 0 1px 0 #fff;display:flex;flex-direction:column;min-width:0;overflow:hidden;transform:perspective(900px) rotateX(3deg);transform-origin:top}
+.chart-card{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:18px 16px 12px;box-shadow:var(--shadow),inset 0 1px 0 #fff;display:flex;flex-direction:column;min-width:0;overflow:visible;transform:perspective(900px) rotateX(3deg);transform-origin:top}
 .chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
 .chart-title{font-size:15px;font-weight:800;color:#2b2118;line-height:1.3}
 .chart-badge{font-size:11px;font-weight:700;background:#fff1f4;color:#ff5a7a;padding:5px 10px;border-radius:999px;box-shadow:0 6px 12px rgba(255,90,122,.16)}
-.chart-container{position:relative;flex:1;min-height:260px;width:100%;max-width:100%}
-.chart-container canvas{max-width:100%!important}
+.chart-container{position:relative;flex:1;min-height:260px;width:100%;max-width:100%;perspective:720px}
+.chart-container canvas{max-width:100%!important;transform:rotateX(8deg);filter:drop-shadow(8px 16px 18px rgba(43,33,24,.16))}
 .card-sec{background:linear-gradient(165deg,#ffffff,#fff8ef);border:1px solid #ffe0c4;border-radius:20px;padding:16px;box-shadow:var(--shadow),inset 0 1px 0 #fff;margin-bottom:16px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .sec-title{font-size:18px;font-weight:800;color:#2b2118;line-height:1.3}
@@ -265,6 +265,77 @@ Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 Chart.defaults.color = '#5a4a3a';
 Chart.defaults.borderColor = '#f0d9b8';
 
+function shadeHex(hex, p){
+    hex = String(hex||'#888').replace('#','');
+    if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+    let n = parseInt(hex, 16);
+    if(!isFinite(n)) return hex;
+    let r = Math.max(0, Math.min(255, Math.round(((n>>16)&255)*p)));
+    let g = Math.max(0, Math.min(255, Math.round(((n>>8)&255)*p)));
+    let b = Math.max(0, Math.min(255, Math.round((n&255)*p)));
+    return 'rgb('+r+','+g+','+b+')';
+}
+function arcProps(el){
+    return el.getProps(['x','y','startAngle','endAngle','innerRadius','outerRadius'], true);
+}
+Chart.register({
+    id: 'lite3d',
+    beforeDatasetsDraw(chart){
+        if(chart.config.type !== 'doughnut') return;
+        let ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+        if(!meta || !meta.data.length) return;
+        let ds = chart.data.datasets[0];
+        for(let layer=10; layer>=1; layer--){
+            ctx.save();
+            ctx.translate(0, layer);
+            meta.data.forEach((arc,i)=>{
+                let p = arcProps(arc);
+                let col = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[i] : ds.backgroundColor;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.outerRadius, p.startAngle, p.endAngle);
+                ctx.arc(p.x, p.y, p.innerRadius, p.endAngle, p.startAngle, true);
+                ctx.closePath();
+                ctx.fillStyle = shadeHex(col, 0.62);
+                ctx.fill();
+            });
+            ctx.restore();
+        }
+    },
+    afterDatasetsDraw(chart){
+        if(chart.config.type !== 'bar') return;
+        let ctx = chart.ctx, D = 8, horiz = chart.options.indexAxis === 'y';
+        chart.data.datasets.forEach((ds, di)=>{
+            let meta = chart.getDatasetMeta(di);
+            if(!meta || meta.hidden) return;
+            meta.data.forEach((el, i)=>{
+                let col = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[i] : ds.backgroundColor;
+                if(!col) return;
+                ctx.save();
+                if(horiz){
+                    let x = el.x, y = el.y, base = el.base, h = el.height;
+                    let top = y - h/2, bot = y + h/2;
+                    ctx.fillStyle = shadeHex(col, 1.16);
+                    ctx.beginPath();
+                    ctx.moveTo(base, top); ctx.lineTo(base+D, top-D); ctx.lineTo(x+D, top-D); ctx.lineTo(x, top); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = shadeHex(col, 0.7);
+                    ctx.beginPath();
+                    ctx.moveTo(x, top); ctx.lineTo(x+D, top-D); ctx.lineTo(x+D, bot-D); ctx.lineTo(x, bot); ctx.closePath(); ctx.fill();
+                } else {
+                    let x = el.x, y = el.y, base = el.base, w = el.width;
+                    let left = x - w/2, right = x + w/2;
+                    ctx.fillStyle = shadeHex(col, 1.16);
+                    ctx.beginPath();
+                    ctx.moveTo(left, y); ctx.lineTo(left+D, y-D); ctx.lineTo(right+D, y-D); ctx.lineTo(right, y); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = shadeHex(col, 0.7);
+                    ctx.beginPath();
+                    ctx.moveTo(right, y); ctx.lineTo(right+D, y-D); ctx.lineTo(right+D, base-D); ctx.lineTo(right, base); ctx.closePath(); ctx.fill();
+                }
+                ctx.restore();
+            });
+        });
+    }
+});
+
 function badgeClass(st){
     let s = String(st||'');
     if(s.startsWith('17')) return 'badge-ready';
@@ -341,7 +412,7 @@ function renderGraphicalCharts(){
             type: 'doughnut',
             data: {
                 labels: sLabels,
-                datasets: [{ data: sVals, backgroundColor: sColors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 4 }]
+                datasets: [{ data: sVals, backgroundColor: sColors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 8 }]
             },
             options: {
                 responsive: true,
@@ -349,7 +420,7 @@ function renderGraphicalCharts(){
                 plugins: {
                     legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: '600' }, padding: 8 } }
                 },
-                cutout: '62%'
+                cutout: '58%'
             }
         });
     }
