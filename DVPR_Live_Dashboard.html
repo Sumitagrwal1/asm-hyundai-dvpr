@@ -6,90 +6,91 @@
 <title>ASM Hyundai | Operations Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#fff5f7;--bg-card:#ffffff;--rose-50:#fff1f2;--rose-100:#ffe4e6;--rose-200:#fecdd3;--rose-300:#fda4af;--rose-400:#fb7185;--rose-500:#f43f5e;--rose-600:#e11d48;--rose-700:#be123c;--rose-800:#9f1239;--rose-900:#881337;--text-main:#0f172a;--text-sub:#334155;--text-muted:#64748b;--border:#ffe4e6;--border-dark:#fecdd3;--radius:16px;--shadow:0 4px 20px -2px rgba(244,63,94,0.07),0 2px 6px -1px rgba(0,0,0,0.03)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#07080f;--bg-card:#12141f;--rose-50:#1a1020;--rose-100:#2a1428;--rose-200:#ff4d8d;--rose-300:#ff7aa8;--rose-400:#ff4d8d;--rose-500:#ff2d6a;--rose-600:#e01555;--rose-700:#ffd447;--rose-800:#5ce1ff;--rose-900:#f4f0ff;--text-main:#f4f0ff;--text-sub:#c8bdd8;--text-muted:#8b8199;--border:#3a3052;--border-dark:#ff2d6a;--radius:0;--shadow:4px 4px 0 #000;--pixel:#ff2d6a;--lime:#7dff6b;--cyan:#5ce1ff;--gold:#ffd447}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;image-rendering:pixelated}
 html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(180deg,#fff0f3 0%,#fff5f7 400px,#ffffff 100%);color:var(--text-main);min-height:100vh;padding:20px 24px 60px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right))}
-.container{max-width:1480px;margin:0 auto;width:100%;min-width:0}
-.top-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:var(--bg-card);padding:18px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
+body{font-family:'VT323',monospace;background:var(--bg);color:var(--text-main);min-height:100vh;padding:20px 24px 60px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right));background-image:linear-gradient(#10121c 2px,transparent 2px),linear-gradient(90deg,#10121c 2px,transparent 2px);background-size:16px 16px}
+body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:50;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.18) 2px 4px);opacity:.35}
+.container{max-width:1480px;margin:0 auto;width:100%;min-width:0;position:relative;z-index:1}
+.top-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:var(--bg-card);padding:18px 20px;border:3px solid var(--pixel);box-shadow:var(--shadow);margin-bottom:16px}
 .brand{display:flex;align-items:center;gap:14px}
-.brand-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--rose-500),var(--rose-700));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;box-shadow:0 8px 18px rgba(225,29,72,0.32);flex-shrink:0}
-.brand-title{font-size:22px;font-weight:800;color:var(--rose-900);line-height:1.2;letter-spacing:-0.02em}
-.brand-subtitle{font-size:12px;font-weight:700;color:var(--rose-500);text-transform:uppercase;letter-spacing:0.08em}
+.brand-icon{width:48px;height:48px;border-radius:0;background:var(--pixel);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Press Start 2P',monospace;font-size:16px;box-shadow:4px 4px 0 #000;flex-shrink:0;border:3px solid #fff}
+.brand-title{font-family:'Press Start 2P',monospace;font-size:13px;font-weight:400;color:var(--gold);line-height:1.5;text-shadow:3px 3px 0 #000}
+.brand-subtitle{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--cyan);text-transform:uppercase;letter-spacing:0.08em;margin-top:6px}
 .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--rose-50);border:1px solid var(--rose-200);color:var(--rose-700);padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
-.live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.2);animation:pulse 1.8s infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.2);opacity:0.7}}
-.btn{background:linear-gradient(135deg,var(--rose-500),var(--rose-600));color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(225,29,72,0.25);transition:all 0.15s ease;white-space:nowrap;min-height:40px}
-.btn:hover{background:linear-gradient(135deg,var(--rose-600),var(--rose-700));transform:translateY(-1px)}
-.btn-sec{background:var(--rose-50);color:var(--rose-700);border:1px solid var(--rose-200);box-shadow:none}
-.btn-sec:hover{background:var(--rose-100);color:var(--rose-900)}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:16px;margin-bottom:20px}
-.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;min-width:0}
-.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px -4px rgba(244,63,94,0.14)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--rose-400),var(--rose-600))}
-.stat-label{font-size:12px;font-weight:700;color:var(--rose-800);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
-.stat-val{font-size:34px;font-weight:800;color:var(--text-main);line-height:1;margin-bottom:6px}
-.stat-hint{font-size:12px;color:var(--text-muted);font-weight:600}
-.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px;margin-bottom:20px}
-.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;overflow:hidden}
-.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.chart-title{font-size:16px;font-weight:800;color:var(--rose-900);letter-spacing:-0.01em}
-.chart-badge{font-size:11px;font-weight:700;background:var(--rose-50);color:var(--rose-700);padding:3px 10px;border-radius:999px;border:1px solid var(--rose-200)}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:#06140c;border:3px solid var(--lime);color:var(--lime);padding:8px 12px;border-radius:0;font-family:'Press Start 2P',monospace;font-size:8px;white-space:nowrap}
+.live-dot{width:8px;height:8px;border-radius:0;background:var(--lime);animation:pulse 1s steps(2) infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.btn{background:var(--pixel);color:#fff;border:3px solid #fff;padding:10px 14px;border-radius:0;font-size:9px;font-family:'Press Start 2P',monospace;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:4px 4px 0 #000;white-space:nowrap;min-height:42px}
+.btn:hover{background:var(--gold);color:#000;border-color:#000}
+.btn:active{box-shadow:0 0 0 #000;transform:translate(4px,4px)}
+.btn-sec{background:#1a1028;color:var(--cyan);border:3px solid var(--cyan);box-shadow:4px 4px 0 #000}
+.btn-sec:hover{background:var(--cyan);color:#000}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-width:0}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:var(--pixel)}
+.stat-label{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--cyan);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;line-height:1.5}
+.stat-val{font-size:42px;font-weight:400;color:var(--gold);line-height:1;margin-bottom:6px}
+.stat-hint{font-size:16px;color:var(--text-muted)}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-bottom:16px}
+.chart-card{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+.chart-title{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--gold);line-height:1.5}
+.chart-badge{font-family:'Press Start 2P',monospace;font-size:7px;background:#000;color:var(--lime);padding:4px 8px;border:2px solid var(--lime)}
 .chart-container{position:relative;flex:1;min-height:260px;width:100%;max-width:100%}
 .chart-container canvas{max-width:100%!important}
-.card-sec{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.card-sec{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.sec-title{font-size:17px;font-weight:800;color:var(--rose-900)}
+.sec-title{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold);line-height:1.5}
 .controls-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
 .search-box{flex:1;min-width:min(100%,260px);position:relative}
-.search-input{width:100%;padding:11px 14px 11px 38px;border-radius:10px;border:1px solid var(--border-dark);font-family:inherit;font-size:16px;font-weight:500;color:var(--text-main);background:#fff;outline:none;transition:border-color 0.15s;min-height:42px}
-.search-input:focus{border-color:var(--rose-500);box-shadow:0 0 0 3px rgba(244,63,94,0.12)}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--rose-400);width:16px;height:16px}
+.search-input{width:100%;padding:11px 14px 11px 38px;border-radius:0;border:3px solid var(--cyan);font-family:'VT323',monospace;font-size:20px;color:#fff;background:#000;outline:none;min-height:44px}
+.search-input:focus{border-color:var(--gold)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--cyan);width:16px;height:16px}
 .filters-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.select-filter{padding:10px 12px;border-radius:10px;border:1px solid var(--border-dark);font-family:inherit;font-size:12px;font-weight:700;color:var(--text-sub);background:#fff;outline:none;min-height:42px}
+.select-filter{padding:10px 12px;border-radius:0;border:3px solid var(--border);font-family:'VT323',monospace;font-size:18px;color:#fff;background:#000;outline:none;min-height:44px}
 .pills-bar{display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin-bottom:16px}
-.pill{padding:7px 15px;border-radius:999px;font-size:12px;font-weight:700;background:var(--rose-50);color:var(--rose-800);border:1px solid var(--rose-200);cursor:pointer;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
-.pill:hover,.pill.active{background:var(--rose-600);color:#fff;border-color:var(--rose-600);box-shadow:0 3px 10px rgba(225,29,72,0.22)}
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:12px}
-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
-th{background:var(--rose-50);color:var(--rose-900);padding:13px 14px;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border-dark);white-space:nowrap}
-td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text-main);font-weight:500;white-space:nowrap}
-tr:nth-child(even){background:#fffbfc}
-tr:hover{background:var(--rose-50)}
-.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap}
-.badge-ready{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
-.badge-parts{background:var(--rose-100);color:var(--rose-800);border:1px solid var(--rose-200)}
-.badge-work{background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe}
-.badge-survey{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
-.badge-other{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}
-.badge-age-danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-weight:800}
-.badge-age-warning{background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-weight:700}
-.badge-age-ok{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+.pill{padding:8px 12px;border-radius:0;font-size:8px;font-family:'Press Start 2P',monospace;background:#000;color:var(--cyan);border:3px solid var(--cyan);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pill:hover,.pill.active{background:var(--pixel);color:#fff;border-color:#fff}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:3px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:18px;text-align:left}
+th{background:#000;color:var(--gold);padding:12px;font-family:'Press Start 2P',monospace;font-size:8px;text-transform:uppercase;border-bottom:3px solid var(--pixel);white-space:nowrap}
+td{padding:10px 12px;border-bottom:2px solid var(--border);color:var(--text-main);white-space:nowrap}
+tr:nth-child(even){background:#0c0e18}
+tr:hover{background:#241428}
+.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:0;font-size:8px;font-family:'Press Start 2P',monospace;line-height:1.3;white-space:nowrap;border:2px solid currentColor}
+.badge-ready{background:#062010;color:var(--lime);border-color:var(--lime)}
+.badge-parts{background:#2a0a16;color:var(--pixel);border-color:var(--pixel)}
+.badge-work{background:#0a1830;color:var(--cyan);border-color:var(--cyan)}
+.badge-survey{background:#2a2208;color:var(--gold);border-color:var(--gold)}
+.badge-other{background:#111;color:#aaa;border-color:#666}
+.badge-age-danger{background:#2a0a0a;color:#ff4d4d;border-color:#ff4d4d}
+.badge-age-warning{background:#2a2208;color:var(--gold);border-color:var(--gold)}
+.badge-age-ok{background:#062010;color:var(--lime);border-color:var(--lime)}
 .pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:16px;padding-top:12px}
-.page-info{font-size:13px;font-weight:600;color:var(--text-muted)}
+.page-info{font-size:18px;color:var(--text-muted)}
 .page-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .mobile-cards{display:none}
-.vcard{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.vcard{background:var(--bg-card);border:3px solid var(--border);border-radius:0;padding:14px;box-shadow:var(--shadow)}
 .vcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.vcard-reg{font-size:16px;font-weight:800;color:var(--rose-900);word-break:break-word}
-.vcard-name{font-size:13px;font-weight:600;color:var(--text-sub);margin-top:2px}
+.vcard-reg{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold);word-break:break-word;line-height:1.5}
+.vcard-name{font-size:18px;color:var(--text-sub);margin-top:6px}
 .vcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.vcard-item{background:var(--rose-50);border-radius:10px;padding:8px 10px}
-.vcard-item span{display:block;font-size:10px;font-weight:800;color:var(--rose-700);text-transform:uppercase;letter-spacing:.04em}
-.vcard-item b{display:block;font-size:12px;font-weight:700;color:var(--text-main);margin-top:3px;word-break:break-word;white-space:normal}
+.vcard-item{background:#000;border:2px solid var(--border);border-radius:0;padding:8px 10px}
+.vcard-item span{display:block;font-family:'Press Start 2P',monospace;font-size:7px;color:var(--cyan);text-transform:uppercase}
+.vcard-item b{display:block;font-size:18px;color:#fff;margin-top:4px;word-break:break-word;white-space:normal}
 .vcard-status{grid-column:1/-1}
-.page-btn{padding:7px 13px;border-radius:8px;border:1px solid var(--border-dark);background:#fff;font-family:inherit;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;min-height:36px}
-.page-btn.active{background:var(--rose-600);color:#fff;border-color:var(--rose-600)}
-.gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:var(--rose-50);border:1px solid var(--rose-200);border-radius:12px;padding:14px;margin-bottom:16px}
-.gsheet-input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--border-dark);border-radius:8px;font-family:inherit;font-size:16px;min-height:40px}
-.connect-drop{flex:1;min-width:min(100%,240px);border:2px dashed var(--rose-400);border-radius:12px;padding:18px;text-align:center;background:#fff;cursor:pointer;font-size:15px;font-weight:800;color:var(--rose-700)}
-.connect-drop.drag{border-color:var(--rose-500);background:var(--rose-50)}
-.connect-help{width:100%;font-size:12px;color:var(--text-muted);font-weight:600;line-height:1.45}
+.page-btn{padding:8px 12px;border-radius:0;border:3px solid var(--border);background:#000;font-family:'Press Start 2P',monospace;font-size:8px;color:var(--text-sub);cursor:pointer;min-height:36px}
+.page-btn.active{background:var(--pixel);color:#fff;border-color:#fff}
+.gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:var(--bg-card);border:3px solid var(--gold);padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.gsheet-input{flex:1;min-width:0;padding:10px 12px;border:3px solid var(--gold);border-radius:0;font-family:'VT323',monospace;font-size:20px;min-height:44px;background:#000;color:#fff}
+.connect-drop{flex:1;min-width:min(100%,240px);border:3px dashed var(--pixel);border-radius:0;padding:18px;text-align:center;background:#000;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.6;color:var(--pixel)}
+.connect-drop.drag{border-style:solid;background:#2a0a16;color:var(--gold)}
+.connect-help{width:100%;font-size:18px;color:var(--text-muted);line-height:1.35}
 @media(max-width:900px){
 .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .charts-grid{grid-template-columns:1fr}
@@ -98,37 +99,39 @@ tr:hover{background:var(--rose-50)}
 body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(48px,env(safe-area-inset-bottom))}
 .top-header{padding:12px;flex-direction:column;align-items:stretch;gap:10px}
 .brand{gap:10px}
-.brand-icon{width:40px;height:40px;font-size:18px}
-.brand-title{font-size:16px}
-.brand-subtitle{font-size:11px}
+.brand-icon{width:40px;height:40px;font-size:12px}
+.brand-title{font-size:9px}
+.brand-subtitle{font-size:7px}
 .header-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .live-badge{grid-column:span 2;justify-content:center}
 .btn{width:100%;min-height:44px}
 .stat-card{padding:12px 10px}
-.stat-val{font-size:22px}
-.stat-label{font-size:10px}
-.stat-hint{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat-val{font-size:34px}
+.stat-label{font-size:7px}
+.stat-hint{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chart-card{padding:12px}
 .chart-head{gap:8px}
-.chart-title{font-size:14px}
+.chart-title{font-size:8px}
 .chart-container{min-height:210px;height:210px}
 .card-sec{padding:12px}
+.sec-title{font-size:9px}
 .controls-bar{flex-direction:column;align-items:stretch}
 .search-box{width:100%;min-width:0}
 .filters-wrap{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.select-filter{width:100%;font-size:14px;min-height:44px}
+.select-filter{width:100%;font-size:18px;min-height:44px}
 .filters-wrap .btn-sec{grid-column:span 2}
 .table-wrap{display:none}
 .mobile-cards{display:flex;flex-direction:column;gap:10px}
 .pagination{flex-direction:column;align-items:center;gap:10px}
 .gsheet-box{flex-direction:column;align-items:stretch}
 .gsheet-input{width:100%;min-width:0}
-.connect-drop{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center}
+.connect-drop{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;font-size:8px}
 .pills-bar{margin:0 -4px 14px;padding:0 4px 10px}
 }
 @media(max-width:420px){
 .vcard-grid{grid-template-columns:1fr}
-.stat-val{font-size:20px}
+.stat-val{font-size:30px}
+.brand-title{font-size:8px}
 }
 </style>
 </head>
@@ -149,20 +152,20 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 </div>
 </header>
 <div class="gsheet-box" id="gsheetBox">
-<div class="connect-drop" id="excelDrop" onclick="pickExcelFile()">Connect Excel — yahan click / drop karo (.xlsx)</div>
+<div class="connect-drop" id="excelDrop" onclick="pickExcelFile()">CONNECT EXCEL — click or drop .xlsx</div>
 <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden onchange="if(this.files[0]) loadExcelFile(this.files[0])">
-<input type="text" id="gsheetUrl" class="gsheet-input" placeholder="Ya Google Sheet link paste karo (Share -> Anyone with the link)">
+<input type="text" id="gsheetUrl" class="gsheet-input" placeholder="Or paste a Google Sheet link (Share: Anyone with the link)">
 <button class="btn" onclick="connectGSheet()">Connect Google Sheet</button>
 <button class="btn btn-sec" onclick="disconnectLive()">Disconnect</button>
-<div class="connect-help">Excel choose karo, ya Google Sheet link paste karke Connect dabaao. Sheet ko "Anyone with the link" pe share karo — save hote hi dashboard update ho jayega.</div>
+<div class="connect-help">Pick any DVPR Excel file, or paste a Google Sheet link. Share the sheet as Anyone with the link. The dashboard refreshes automatically when the sheet is saved.</div>
 </div>
 <div class="stats-grid">
 <div class="stat-card"><div class="stat-label">Total Vehicles</div><div class="stat-val" id="kpiTotal">0</div><div class="stat-hint" id="kpiExcelFile">DVPR 18-10-2026-2026 $99.xlsx</div></div>
-<div class="stat-card"><div class="stat-label">Ready For Delivery</div><div class="stat-val" style="color:#16a34a" id="kpiReady">0</div><div class="stat-hint">Ready to Handover</div></div>
-<div class="stat-card"><div class="stat-label">In Bodyshop Work</div><div class="stat-val" style="color:#4f46e5" id="kpiWork">0</div><div class="stat-hint">Denting, Paint, Fitting</div></div>
-<div class="stat-card"><div class="stat-label">Parts Pending</div><div class="stat-val" style="color:var(--rose-600)" id="kpiParts">0</div><div class="stat-hint">Waiting For Parts</div></div>
-<div class="stat-card"><div class="stat-label">Survey / Estimate</div><div class="stat-val" style="color:#d97706" id="kpiSurvey">0</div><div class="stat-hint">Surveyor & Approvals</div></div>
-<div class="stat-card"><div class="stat-label">Ageing 21+ Days</div><div class="stat-val" style="color:#dc2626" id="kpiAgeing">0</div><div class="stat-hint">Requires Attention</div></div>
+<div class="stat-card"><div class="stat-label">Ready For Delivery</div><div class="stat-val" style="color:#7dff6b" id="kpiReady">0</div><div class="stat-hint">Ready to Handover</div></div>
+<div class="stat-card"><div class="stat-label">In Bodyshop Work</div><div class="stat-val" style="color:#5ce1ff" id="kpiWork">0</div><div class="stat-hint">Denting, Paint, Fitting</div></div>
+<div class="stat-card"><div class="stat-label">Parts Pending</div><div class="stat-val" style="color:#ff2d6a" id="kpiParts">0</div><div class="stat-hint">Waiting For Parts</div></div>
+<div class="stat-card"><div class="stat-label">Survey / Estimate</div><div class="stat-val" style="color:#ffd447" id="kpiSurvey">0</div><div class="stat-hint">Surveyor & Approvals</div></div>
+<div class="stat-card"><div class="stat-label">Ageing 21+ Days</div><div class="stat-val" style="color:#ff4d4d" id="kpiAgeing">0</div><div class="stat-hint">Requires Attention</div></div>
 </div>
 <div class="charts-grid">
 <div class="chart-card">
@@ -239,8 +242,9 @@ let pageSize = 25;
 let curPill = 'ALL';
 let charts = {};
 
-Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-Chart.defaults.color = '#334155';
+Chart.defaults.font.family = "'VT323', monospace";
+Chart.defaults.color = '#c8bdd8';
+Chart.defaults.borderColor = '#3a3052';
 
 function badgeClass(st){
     let s = String(st||'');
@@ -307,7 +311,7 @@ function renderGraphicalCharts(){
 
     let sLabels = Object.keys(stageCounts);
     let sVals = Object.values(stageCounts);
-    let sColors = ['#10b981', '#f43f5e', '#6366f1', '#8b5cf6', '#f59e0b', '#fb7185', '#94a3b8'];
+    let sColors = ['#7dff6b', '#ff2d6a', '#5ce1ff', '#b07cff', '#ffd447', '#ff7aa8', '#8b8199'];
 
     if(charts.stage){
         charts.stage.data.datasets[0].data = sVals;
@@ -318,7 +322,7 @@ function renderGraphicalCharts(){
             type: 'doughnut',
             data: {
                 labels: sLabels,
-                datasets: [{ data: sVals, backgroundColor: sColors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }]
+                datasets: [{ data: sVals, backgroundColor: sColors, borderWidth: 2, borderColor: '#12141f', hoverOffset: 4 }]
             },
             options: {
                 responsive: true,
@@ -351,9 +355,9 @@ function renderGraphicalCharts(){
                 datasets: [{
                     label: 'Vehicles',
                     data: aVals,
-                    backgroundColor: '#fb7185',
-                    hoverBackgroundColor: '#e11d48',
-                    borderRadius: 8
+                    backgroundColor: '#ff2d6a',
+                    hoverBackgroundColor: '#ffd447',
+                    borderRadius: 0
                 }]
             },
             options: {
@@ -361,7 +365,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#ffe4e6' } },
+                    y: { beginAtZero: true, grid: { color: '#3a3052' } },
                     x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
                 }
             }
@@ -380,7 +384,7 @@ function renderGraphicalCharts(){
     });
     let bLabels = Object.keys(bMap);
     let bVals = Object.values(bMap);
-    let bColors = ['#10b981', '#34d399', '#fde047', '#fb923c', '#f43f5e', '#be123c'];
+    let bColors = ['#7dff6b', '#5ce1ff', '#ffd447', '#ff9f43', '#ff2d6a', '#ff4d4d'];
 
     if(charts.ageing){
         charts.ageing.data.datasets[0].data = bVals;
@@ -395,7 +399,7 @@ function renderGraphicalCharts(){
                     label: 'Vehicles',
                     data: bVals,
                     backgroundColor: bColors,
-                    borderRadius: 8
+                    borderRadius: 0
                 }]
             },
             options: {
@@ -403,7 +407,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#ffe4e6' } },
+                    y: { beginAtZero: true, grid: { color: '#3a3052' } },
                     x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 } } }
                 }
             }
@@ -429,9 +433,9 @@ function renderGraphicalCharts(){
                 datasets: [{
                     label: 'Vehicles',
                     data: iVals,
-                    backgroundColor: '#fda4af',
-                    hoverBackgroundColor: '#f43f5e',
-                    borderRadius: 8
+                    backgroundColor: '#ff7aa8',
+                    hoverBackgroundColor: '#ff2d6a',
+                    borderRadius: 0
                 }]
             },
             options: {
@@ -440,7 +444,7 @@ function renderGraphicalCharts(){
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { beginAtZero: true, grid: { color: '#ffe4e6' } },
+                    x: { beginAtZero: true, grid: { color: '#3a3052' } },
                     y: { grid: { display: false }, ticks: { font: { weight: '700', size: 10 } } }
                 }
             }
@@ -738,16 +742,16 @@ function pickExcelFile(){
 
 function loadExcelFile(file){
     if(!file) return;
-    setSync('Excel padh raha hoon...');
+    setSync('Reading Excel...');
     let reader = new FileReader();
     reader.onload = e => {
         try {
             let ndata = parseWorkbook(e.target.result, file.name);
             liveSource = 'excel-upload';
             liveFileHandle = null;
-            if(!applyLiveData(ndata, file.name, true)) alert('Is Excel me vehicle rows nahi mili. DVPR sheet / status column check karo.');
+            if(!applyLiveData(ndata, file.name, true)) alert('No vehicle rows found. Check the DVPR sheet and status column.');
         } catch(err){
-            alert('Excel read nahi hui: ' + err.message);
+            alert('Could not read Excel: ' + err.message);
             setSync('Excel Error');
         }
     };
@@ -762,12 +766,12 @@ async function loadFromHandle(closePanel){
         let ndata = parseWorkbook(buf, file.name);
         applyLiveData(ndata, 'Live Excel · ' + file.name, closePanel);
     } catch(err){
-        setSync('Excel lock / error');
+        setSync('Excel locked / error');
     }
 }
 
 function parseWorkbook(buf, fname){
-    if(typeof XLSX === 'undefined') throw new Error('Excel library load nahi hui');
+    if(typeof XLSX === 'undefined') throw new Error('Excel library failed to load');
     let wb = XLSX.read(buf, {type:'array', cellDates:true});
     let sheetName = wb.SheetNames.find(n => /dvpr/i.test(n)) || wb.SheetNames[0];
     let rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1, raw:false, defval:''});
@@ -795,12 +799,12 @@ async function fetchText(url){
         if(r.ok) return await r.text();
     } catch(e){}
     let r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), {cache:'no-store'});
-    if(!r2.ok) throw new Error('Sheet open nahi hui');
+    if(!r2.ok) throw new Error('Could not open the sheet');
     return await r2.text();
 }
 
 async function loadGoogleSheet(url, closePanel){
-    setSync('Google Sheet fetch...');
+    setSync('Fetching Google Sheet...');
     let lastErr = null;
     for(const u of toSheetCsvUrls(url)){
         try {
@@ -816,14 +820,14 @@ async function loadGoogleSheet(url, closePanel){
             }
         } catch(e){ lastErr = e; }
     }
-    throw lastErr || new Error('Sheet me data nahi mila');
+    throw lastErr || new Error('No data found in the sheet');
 }
 
 function connectGSheet(){
     let url = document.getElementById('gsheetUrl').value.trim();
-    if(!url){ alert('Google Sheet link paste karo'); return; }
+    if(!url){ alert('Paste a Google Sheet link'); return; }
     loadGoogleSheet(url, true).catch(e=>{
-        alert('Sheet connect nahi hui. Excel/Google Sheet ko Anyone with the link pe share karo.\n' + e.message);
+        alert('Could not connect. Share the sheet as Anyone with the link.\n' + e.message);
         setSync('Sheet Error');
     });
 }
