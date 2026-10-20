@@ -85,10 +85,9 @@ tr:hover{background:var(--rose-50)}
 .vcard-status{grid-column:1/-1}
 .page-btn{padding:7px 13px;border-radius:8px;border:1px solid var(--border-dark);background:#fff;font-family:inherit;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;min-height:36px}
 .page-btn.active{background:var(--rose-600);color:#fff;border-color:var(--rose-600)}
-.gsheet-box{display:none;background:var(--rose-50);border:1px solid var(--rose-200);border-radius:12px;padding:14px;margin-bottom:16px}
-.gsheet-box.open{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+.gsheet-box{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;background:var(--rose-50);border:1px solid var(--rose-200);border-radius:12px;padding:14px;margin-bottom:16px}
 .gsheet-input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--border-dark);border-radius:8px;font-family:inherit;font-size:16px;min-height:40px}
-.connect-drop{flex:1;min-width:min(100%,240px);border:2px dashed var(--rose-300);border-radius:12px;padding:16px;text-align:center;background:#fff;cursor:pointer;font-size:13px;font-weight:700;color:var(--rose-800)}
+.connect-drop{flex:1;min-width:min(100%,240px);border:2px dashed var(--rose-400);border-radius:12px;padding:18px;text-align:center;background:#fff;cursor:pointer;font-size:15px;font-weight:800;color:var(--rose-700)}
 .connect-drop.drag{border-color:var(--rose-500);background:var(--rose-50)}
 .connect-help{width:100%;font-size:12px;color:var(--text-muted);font-weight:600;line-height:1.45}
 @media(max-width:900px){
@@ -122,8 +121,9 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 .table-wrap{display:none}
 .mobile-cards{display:flex;flex-direction:column;gap:10px}
 .pagination{flex-direction:column;align-items:center;gap:10px}
-.gsheet-box.open{flex-direction:column;align-items:stretch}
+.gsheet-box{flex-direction:column;align-items:stretch}
 .gsheet-input{width:100%;min-width:0}
+.connect-drop{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center}
 .pills-bar{margin:0 -4px 14px;padding:0 4px 10px}
 }
 @media(max-width:420px){
@@ -144,18 +144,17 @@ body{padding:10px 8px 48px;padding-left:max(8px,env(safe-area-inset-left));paddi
 </div>
 <div class="header-actions">
 <span class="live-badge"><span class="live-dot" id="liveDot"></span><span id="syncText">Live Excel Sync</span></span>
-<button class="btn btn-sec" onclick="toggleGSheet()">Connect Excel</button>
-<button class="btn" onclick="triggerRefresh()">Refresh Data</button>
+<button class="btn" onclick="pickExcelFile()">Connect Excel</button>
+<button class="btn btn-sec" onclick="triggerRefresh()">Refresh Data</button>
 </div>
 </header>
 <div class="gsheet-box" id="gsheetBox">
-<div class="connect-drop" id="excelDrop" onclick="pickExcelFile()">Excel file yahan drop karo ya click karke choose karo (.xlsx)</div>
+<div class="connect-drop" id="excelDrop" onclick="pickExcelFile()">Connect Excel — yahan click / drop karo (.xlsx)</div>
 <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden onchange="if(this.files[0]) loadExcelFile(this.files[0])">
 <input type="text" id="gsheetUrl" class="gsheet-input" placeholder="Ya Google Sheet link paste karo (Share -> Anyone with the link)">
 <button class="btn" onclick="connectGSheet()">Connect Google Sheet</button>
 <button class="btn btn-sec" onclick="disconnectLive()">Disconnect</button>
-<button class="btn btn-sec" onclick="toggleGSheet()">Close</button>
-<div class="connect-help">Koi bhi DVPR Excel chalega. Google Sheet ko "Anyone with the link" pe share karo — save karte hi dashboard 8 second me update ho jayega. Phone pe live data ke liye Google Sheet best hai.</div>
+<div class="connect-help">Excel choose karo, ya Google Sheet link paste karke Connect dabaao. Sheet ko "Anyone with the link" pe share karo — save hote hi dashboard update ho jayega.</div>
 </div>
 <div class="stats-grid">
 <div class="stat-card"><div class="stat-label">Total Vehicles</div><div class="stat-val" id="kpiTotal">0</div><div class="stat-hint" id="kpiExcelFile">DVPR 18-10-2026-2026 $99.xlsx</div></div>
